@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="sv-SE">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schema</title>
+    <link rel="shortcut icon" href="assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/global.css">
+    <script src="assets/js/index.html.js" type="module" defer></script>
+</head>
+<body>
+    <div @vue:mounted="mounted" :class="{ 'loaded': loaded }" id="root">
+        <div v-if="modalType" class="modal">
+            <div v-if="modalType == 'subject'" class="modal-container">
+                <div class="modal-main">
+                    <div class="modal-top">
+                        <span class="modal-label">
+                            <span>{{ template(modal).name }}</span>
+                            <span class="modal-small">{{ humanTime(modal.begin) }} - {{ humanTime(modal.begin + modal.length) }}</span>
+                        </span>
+                        <button @click="closeModal" class="modal-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-chalkboard-user"></i>
+                            <span class="modal-field-span">{{ template(modal).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id).name || "NULL").join(", ") }}</span>
+                        </div>
+                        <div v-if="modal.pupils?.length" class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-users"></i>
+                            <span class="modal-field-span">{{ modal.pupils.map(a => schedule.pupils[a] || a).sort().join(", ") }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="modalType == 'tag'" class="modal-container">
+                <div class="modal-main">
+                    <div class="modal-top">
+                        <span class="modal-label">
+                            <span>{{ modal.label }}</span>
+                        </span>
+                        <button @click="closeModal" class="modal-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-clock"></i>
+                            <span class="modal-field-span">{{ humanTime(modal.time) }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-btns">
+                    <button @click="removeTag(modal.id)" class="modal-btn btn-danger">Radera</button>
+                </div>
+            </div>
+            <form @submit.prevent="modal.done" v-if="modalType == 'input'" class="modal-container">
+                <div class="modal-main">
+                    <div class="modal-top">
+                        <span v-if="modalArgs[0] == 'tag'" class="modal-label">
+                            <span>{{ modalInput.label || "Ny markör" }}</span>
+                            <span v-if="modalInput.time" class="modal-small">{{ modalInput.time || "--:--" }}</span>
+                        </span>
+                        <button @click="closeModal" class="modal-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div v-if="modalArgs[0] == 'tag'" class="modal-content">
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-pencil"></i>
+                            <input v-model="modalInput.label" type="text" class="modal-field-input">
+                        </div>
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-clock"></i>
+                            <input v-model="modalInput.time" type="time" class="modal-field-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-btns">
+                    <button type="submit" class="modal-btn btn-success">OK</button>
+                    <button type="button" @click="closeModal" class="modal-btn">Avbryt</button>
+                </div>
+            </form>
+        </div>
+        <span v-if="warning" class="warning">{{ warning }}</span>
+        <div class="content">
+            <main>
+                <div class="btns">
+                    <a href="editor.html" class="btn">
+                        <i class="fa-solid fa-calendar-plus btn-icon"></i>
+                        <span class="btn-label">Redigera schema</span>
+                    </a>
+                    <button @click="print" class="btn">
+                        <i class="fa-solid fa-print btn-icon"></i>
+                        <span class="btn-label">Skriv ut</span>
+                    </button>
+               </div>
+                <div class="top">
+                    <span class="top-label">{{ schedule.label }}</span>
+                    <span class="top-label">{{ schedule.revision }}</span>
+                </div>
+                <div :style="{'height': (schedule.end - schedule.begin) * scheduleScale + 16 + 'px'}" class="schedule">
+                    <div v-for="dayI in 5" @click="$event.ctrlKey ? createTagModal(dayI - 1, $event) : void(0)" @dblclick="createTagModal(dayI - 1, $event)" class="schedule-col">
+                        <div v-for="subject in schedule.subjects.filter(a => a.begin > (dayI - 1) * 1440 && a.begin < dayI * 1440)" class="subject-container">
+                            <div
+                                @click="$event.ctrlKey ? void(0) : showModal('subject', subject)"
+                                :style="{
+                                    '--height': subject.length * scheduleScale + 'px',
+                                    'background': schedule.colors[template(subject).color],
+                                    'top': (subject.begin - 1440 * (dayI - 1) - schedule.begin) * scheduleScale - 1 + 'px'
+                                }" class="schedule-row subject">
+                                <span class="subject-name">{{ template(subject).name }}</span>
+                                <span class="subject-times">{{ humanTime(subject.begin) }} - {{ humanTime(subject.begin + subject.length) }}</span>
+                                <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id).name || "NULL").join(", ") }}</span>
+                            </div>
+                        </div>
+                        <div class="subject-container" style="width: 100%; left: 0;">
+                            <span v-if="today - 1 == dayI - 1 && now > schedule.begin && now < schedule.end" :style="{ top: (now - schedule.begin) * scheduleScale + 'px' }" class="schedule-now"></span>
+                            <span v-if="tagCreationPlaceholder" :style="{ top: (tagCreationPlaceholder - schedule.begin - 4) * scheduleScale + 'px' }" class="schedule-tag schedule-tag-placeholder"><small>{{ humanTime(tagCreationPlaceholder) }}</small></span>
+                            <span v-for="tag in tags.filter(a => a.time > (dayI - 1) * 1440 && a.time < dayI * 1440)" @click="showModal('tag', tag)" :style="{ top: (tag.time - 1440 * (dayI - 1) - schedule.begin - 4) * scheduleScale + 'px' }" class="schedule-tag"><small>{{ humanTime(tag.time) }}</small> {{ tag.label }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="exeptions-container">
+                    <div v-for="exeption in schedule.exeptions" class="exeption">
+                        <p class="exeption-text">
+                            {{ exeption.name }}
+                            <span v-if="exeption.week" class="exeption-date">
+                                -
+                                v.
+                                {{ exeption.week }}
+                            </span>
+                            <span v-else-if="exeption.date" class="exeption-date">
+                                -
+                                {{ humanDate(exeption.date) }}
+                            </span>
+                            <span v-else-if="exeption.start && exeption.end" class="exeption-date">
+                                -
+                                {{ humanDate(exeption.start) }}
+                                -
+                                {{ humanDate(exeption.end) }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="sv-SE">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redigerar schema</title>
+    <link rel="shortcut icon" href="assets/img/favicon-editor.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+        <link rel="stylesheet" href="assets/css/global.css">
+    <script src="assets/js/editor.html.js" type="module" defer></script>
+</head>
+<body>
+    <div @vue:mounted="mounted" :class="{ 'loaded': loaded }" id="root">
+        <div v-if="modalType" class="modal">
+            <div v-if="modalType == 'subject'" class="modal-container">
+                <div class="modal-main">
+                    <div class="modal-top">
+                        <span class="modal-label">
+                            <span>{{ template(modal).name }}</span>
+                            <span class="modal-small">{{ humanTime(modal.begin) }} - {{ humanTime(modal.begin + modal.length) }}</span>
+                        </span>
+                        <button @click="closeModal" class="modal-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-chalkboard-user"></i>
+                            <span class="modal-field-span">{{ template(modal).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                        </div>
+                        <div v-if="modal.pupils?.length" class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-users"></i>
+                            <span class="modal-field-span">{{ modal.pupils.map(a => schedule.pupils[a] || a).sort().join(", ") }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-btns">
+                    <button @click="subjectEditModal(modal.id)" class="modal-btn">Redigera</button>
+                    <button @click="removeSubject(modal.id)" class="modal-btn btn-danger">Radera</button>
+                </div>
+            </div>
+            <div v-if="modalType == 'input'" id="form" class="modal-container">
+                <div class="modal-main">
+                    <div class="modal-top">
+                        <span v-if="modalArgs[0] == 'subject'" class="modal-label">
+                            <span>{{ modalInput.name || modal.label }}</span>
+                            <span class="modal-small">
+                                {{ modalInput.begin ? humanTime(scheduleTime(modalInput.begin)) : "--:--" }}
+                                -
+                                {{ modalInput.end ? humanTime(scheduleTime(modalInput.end)) : "--:--" }}
+                            </span>
+                        </span>
+                        <span v-if="modalArgs[0] == 'template'" class="modal-label">
+                            <span>{{ modalInput.name || modal.label }}</span>
+                        </span>
+                        <span v-if="modalArgs[0] == 'import'" class="modal-label">
+                            <span>Importera schema</span>
+                        </span>
+                        <button @click="closeModal" class="modal-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div v-if="modalArgs[0] == 'subject'" class="modal-content">
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-pencil"></i>
+                            <input v-model="modalInput.name" type="text" class="modal-field-input">
+                            <select v-if="modalArgs[0] == 'subject'" v-model="modalInput.template" @change="editSubjectTemplate" class="modal-field-input">
+                                <option value="null"></option>
+                                <option v-for="template in schedule.templates" :value="template.id">{{ template.name }}</option>
+                            </select>
+                        </div>
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-clock"></i>
+                            <input v-model="modalInput.begin" @change="editSubjectBeginTime" type="time" class="modal-field-input">
+                            -
+                            <input v-model="modalInput.end" @change="editSubjectEndTime" type="time" class="modal-field-input">
+                            <span class="modal-field-span">
+                                <span v-if="modalInput.timeDifference >= 60">{{ Math.floor(modalInput.timeDifference / 60) }}h<span v-if="modalInput.timeDifference % 60 != 0">,</span></span>
+                                <span v-if="modalInput.timeDifference % 60 != 0">{{ modalInput.timeDifference % 60 }} min</span>
+                            </span>
+                        </div>
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-chalkboard-user"></i>
+                            <select v-for="(_, i) in modalInput.teachers" v-model="modalInput.teachers[i]" @change="editSubjectTeacher(i)" class="modal-field-input">
+                                <option value="null"></option>
+                                <option v-for="teacher in schedule.teachers" :value="teacher.id">{{ teacher.name }}</option>
+                            </select>
+                        </div>
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-palette"></i>
+                            <select v-model="modalInput.color" class="modal-field-input" :style="{ 'color': schedule.colors[modalInput.color] }">
+                                <option v-for="(color, name) in schedule.colors" :value="name" :style="{ 'color': color }" class="modal-field-coloropt">{{ name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div v-if="modalArgs[0] == 'template'" class="modal-content">
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-pencil"></i>
+                            <input v-model="modalInput.name" type="text" class="modal-field-input">
+                        </div>
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-chalkboard-user"></i>
+                            <select v-for="(_, i) in modalInput.teachers" v-model="modalInput.teachers[i]" @change="editSubjectTeacher(i)" class="modal-field-input">
+                                <option value="null"></option>
+                                <option v-for="teacher in schedule.teachers" :value="teacher.id">{{ teacher.name }}</option>
+                            </select>
+                        </div>
+                        <div class="modal-field">
+                            <i class="modal-field-icon fa-solid fa-palette"></i>
+                            <select v-model="modalInput.color" class="modal-field-input" :style="{ 'color': schedule.colors[modalInput.color] }">
+                                <option v-for="(color, name) in schedule.colors" :value="name" :style="{ 'color': color }" class="modal-field-coloropt">{{ name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-btns">
+                    <button @click="modal.done" class="modal-btn btn-success">OK</button>
+                    <button @click="closeModal" class="modal-btn">Avbryt</button>
+                </div>
+                <div v-if="modal.error" class="modal-err">
+                    <span class="modal-err-text">{{ modal.error }}</span>
+                </div>
+            </div>
+        </div>
+        <span v-if="warning" class="warning">{{ warning }}</span>
+        <div class="content">
+            <main>
+                <div class="btns">
+                    <a href="index.html" class="btn">
+                        <i class="fa-solid fa-calendar-week btn-icon"></i>
+                        <span class="btn-label">Visa schema</span>
+                    </a>
+                    <button @click="saveSchedule" :disabled="!hasUnsavedChanges" class="btn">
+                        <i class="fa-solid fa-floppy-disk btn-icon"></i>
+                        <span class="btn-label">Spara</span>
+                        <i v-if="hasUnsavedChanges" class="fa-solid fa-circle btn-status" title="Du har osparade ändringar"></i>
+                    </button>
+                </div>
+                <div class="top">
+                    <input v-model="schedule.label" @input="markUnsaved" type="text" class="top-input" placeholder="Namn Klass (Ludvig 8D)">
+                    <input v-model="schedule.revision" @input="markUnsaved" type="text" class="top-input" placeholder="Revision (vt23.2.3)">
+                </div>
+                <div :style="{'height': (schedule.end - schedule.begin) * scheduleScale + 16 + 'px'}" class="schedule">
+                    <div v-for="dayI in 5" @click="$event.ctrlKey ? subjectCreateModal(dayI, $event) : void(0)" @dblclick="subjectCreateModal(dayI, $event)" class="schedule-col">
+                        <div v-if="subjectCreationPlaceholder" class="subject-container">
+                            <div
+                                :style="{
+                                    '--height': (60) * scheduleScale + 'px',
+                                    'top': (subjectCreationPlaceholder - schedule.begin) * scheduleScale - 1 + 'px'
+                                }"
+                                class="schedule-row subject subject-placeholder">
+                                <span class="subject-times">{{ humanTime(subjectCreationPlaceholder) }} - {{ humanTime(subjectCreationPlaceholder + 60) }}</span>
+                            </div>
+                        </div>
+                        <div v-for="subject in schedule.subjects.filter(a => a.begin > (dayI - 1) * 1440 && a.begin < dayI * 1440)" class="subject-container">
+                            <div
+                                @click="$event.ctrlKey ? void(0) : showModal('subject', subject)"
+                                :style="{
+                                    '--height': subject.length * scheduleScale + 'px',
+                                    'background': schedule.colors[template(subject).color],
+                                    'top': (subject.begin - 1440 * (dayI - 1) - schedule.begin) * scheduleScale - 1 + 'px'
+                                }"
+                                :class="{
+                                    'template-filtered': templateFilter ? templateFilter != subject.template : false,
+                                    'template-filter-highlight': templateFilter ? templateFilter == subject.template : false
+                                }" class="schedule-row subject">
+                                <span class="subject-name">{{ template(subject).name }}</span>
+                                <span class="subject-times">{{ humanTime(subject.begin) }} - {{ humanTime(subject.begin + subject.length) }}</span>
+                                <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="exeptions-container">
+                    <div v-for="exeption in schedule.exeptions" class="exeption">
+                        <p class="exeption-text">
+                            {{ exeption.name }}
+                            <span v-if="exeption.week" class="exeption-date">
+                                -
+                                v.
+                                {{ exeption.week }}
+                            </span>
+                            <span v-else-if="exeption.date" class="exeption-date">
+                                -
+                                {{ humanDate(exeption.date) }}
+                            </span>
+                            <span v-else-if="exeption.start && exeption.end" class="exeption-date">
+                                -
+                                {{ humanDate(exeption.start) }}
+                                -
+                                {{ humanDate(exeption.end) }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </main>
+            <aside id="config-container">
+                <div class="config teachers" :class="{ 'config-show': !allowConfigMenuToggling || configMenus.includes('teachers') }">
+                    <button @click="toggleConfigMenu('teachers')" :disabled="!allowConfigMenuToggling" class="config-top">
+                        <h2 class="config-top-title">Lärare</h2>
+                        <i v-if="allowConfigMenuToggling" class="fa-solid fa-angle-up config-top-icon"></i>
+                    </button>
+                    <div class="config-content">
+                        <div v-for="(teacher, i) in schedule.teachers" class="teachers-field">
+                            <input v-model="teacher.name" @input="markUnsaved" type="text" class="teachers-field-input">
+                            <button @click="removeTeacher(teacher.id)" class="teachers-field-removebtn">
+                                <i class="fa-solid fa-minus-circle"></i>
+                            </button>
+                        </div>
+                        <form @submit.prevent="addTeacher" class="teachers-field">
+                            <input v-model="scheduleTeacherInput" type="text" class="teachers-field-input">
+                            <button type="submit" class="teachers-field-addbtn">
+                                <i class="fa-solid fa-plus-circle"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="config templates" :class="{ 'config-show': !allowConfigMenuToggling || configMenus.includes('templates') }">
+                    <button @click="toggleConfigMenu('templates')" :disabled="!allowConfigMenuToggling" class="config-top">
+                        <h2 class="config-top-title">Mallar</h2>
+                        <i v-if="allowConfigMenuToggling" class="fa-solid fa-angle-up config-top-icon"></i>
+                    </button>
+                    <div class="config-content">
+                        <div v-for="template in schedule.templates" @mouseover="startTemplateFilter(template.id)" @mouseout="endTemplateFilter(template.id)" class="templates-field">
+                            <span class="templates-field-name">{{ template.name }}</span>
+                            <span class="templates-field-teachers">{{ template.teachers.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                            <div class="templates-field-btns">
+                                <button @click="editTemplateModal(template.id)" type="submit" class="templates-field-btn">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                                <button @click="removeTemplate(template.id)" class="templates-field-btn btn-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button @click="createTemplateModal" class="templates-addbtn">
+                            <i class="fa-solid fa-plus-circle"></i>
+                            Ny mall
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</body>
+</html>
