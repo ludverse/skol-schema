@@ -511,7 +511,6 @@ aside {
 .templates-field {
     margin: 4px;
     padding: 8px;
-    width: 100%;
     display: grid;
     border: 1px solid #dfdfdf;
     border-radius: 8px;
