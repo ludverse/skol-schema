@@ -28,7 +28,13 @@ const app = vue.createApp({
             gray: "#a3a3a3",
             black: "#4b6584"
         },
-        teachers: [], 
+        teachers: [{
+            id: "a",
+            name: "Nils"
+        }, {
+            id: "b",
+            name: "Elin"
+        }],
         templates: [],
         exeptions: [],
         subjects: []
@@ -280,7 +286,7 @@ const app = vue.createApp({
         }
 
         this.showModal("input:template", {
-            label: "Ny mall",
+            label: "Ny ämnesmall",
             done: this.createTemplate,
             error: null
         });
@@ -296,7 +302,7 @@ const app = vue.createApp({
         }
 
         this.showModal("input:template", {
-            label: "Redigera mall",
+            label: "Redigera ämnesmall",
             done: this.editTemplate.bind(this, template.id),
             error: null
         });
@@ -319,6 +325,8 @@ const app = vue.createApp({
     },
 
     editTemplate(templateId) {
+        if (!this.modalInput.name) return this.modal.error = "Skriv in ett namn för mallen";
+
         const templateI = this.schedule.templates.findIndex(template => template.id == templateId);
 
         this.closeModal();

@@ -7,8 +7,8 @@
     <title>Redigerar schema</title>
     <link rel="shortcut icon" href="assets/img/favicon-editor.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-        <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/global.css">
     <script src="assets/js/editor.html.js" type="module" defer></script>
 </head>
 <body>
@@ -27,18 +27,18 @@
                     </div>
                     <div class="modal-content">
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-chalkboard-user"></i>
-                            <span class="modal-field-span">{{ template(modal).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                            <i class="modal-text fa-solid fa-chalkboard-user"></i>
+                            <span class="modal-text">{{ template(modal).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
                         </div>
                         <div v-if="modal.pupils?.length" class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-users"></i>
-                            <span class="modal-field-span">{{ modal.pupils.map(a => schedule.pupils[a] || a).sort().join(", ") }}</span>
+                            <i class="modal-text"></i>
+                            <span class="modal-text">{{ modal.pupils.map(a => schedule.pupils[a] || a).sort().join(", ") }}</span>
                         </div>
                     </div>
                 </div>
                 <div class="modal-btns">
-                    <button @click="subjectEditModal(modal.id)" class="modal-btn">Redigera</button>
-                    <button @click="removeSubject(modal.id)" class="modal-btn btn-danger">Radera</button>
+                    <button @click="subjectEditModal(modal.id)" class="modal-element btn">Redigera</button>
+                    <button @click="removeSubject(modal.id)" class="modal-element btn btn-danger">Radera</button>
                 </div>
             </div>
             <div v-if="modalType == 'input'" id="form" class="modal-container">
@@ -64,60 +64,60 @@
                     </div>
                     <div v-if="modalArgs[0] == 'subject'" class="modal-content">
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-pencil"></i>
-                            <input v-model="modalInput.name" type="text" class="modal-field-input">
-                            <select v-if="modalArgs[0] == 'subject'" v-model="modalInput.template" @change="editSubjectTemplate" class="modal-field-input">
+                            <i class="modal-text fa-solid fa-pencil"></i>
+                            <input v-model="modalInput.name" type="text" class="modal-element inp">
+                            <select v-if="modalArgs[0] == 'subject'" v-model="modalInput.template" @change="editSubjectTemplate" class="modal-element inp">
                                 <option value="null"></option>
                                 <option v-for="template in schedule.templates" :value="template.id">{{ template.name }}</option>
                             </select>
                         </div>
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-clock"></i>
-                            <input v-model="modalInput.begin" @change="editSubjectBeginTime" type="time" class="modal-field-input">
+                            <i class="modal-text fa-solid fa-clock"></i>
+                            <input v-model="modalInput.begin" @change="editSubjectBeginTime" type="time" class="modal-element inp">
                             -
-                            <input v-model="modalInput.end" @change="editSubjectEndTime" type="time" class="modal-field-input">
-                            <span class="modal-field-span">
+                            <input v-model="modalInput.end" @change="editSubjectEndTime" type="time" class="modal-element inp">
+                            <span>
                                 <span v-if="modalInput.timeDifference >= 60">{{ Math.floor(modalInput.timeDifference / 60) }}h<span v-if="modalInput.timeDifference % 60 != 0">,</span></span>
                                 <span v-if="modalInput.timeDifference % 60 != 0">{{ modalInput.timeDifference % 60 }} min</span>
                             </span>
                         </div>
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-chalkboard-user"></i>
-                            <select v-for="(_, i) in modalInput.teachers" v-model="modalInput.teachers[i]" @change="editSubjectTeacher(i)" class="modal-field-input">
+                            <i class="modal-text fa-solid fa-chalkboard-user"></i>
+                            <select v-for="(_, i) in modalInput.teachers" v-model="modalInput.teachers[i]" @change="editSubjectTeacher(i)" class="modal-element inp">
                                 <option value="null"></option>
                                 <option v-for="teacher in schedule.teachers" :value="teacher.id">{{ teacher.name }}</option>
                             </select>
                         </div>
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-palette"></i>
-                            <select v-model="modalInput.color" class="modal-field-input" :style="{ 'color': schedule.colors[modalInput.color] }">
-                                <option v-for="(color, name) in schedule.colors" :value="name" :style="{ 'color': color }" class="modal-field-coloropt">{{ name }}</option>
+                            <i class="modal-text fa-solid fa-palette"></i>
+                            <select v-model="modalInput.color" class="modal-element inp" :style="{ 'color': schedule.colors[modalInput.color] }">
+                                <option v-for="(color, name) in schedule.colors" :value="name" :style="{ 'color': color }">{{ name }}</option>
                             </select>
                         </div>
                     </div>
                     <div v-if="modalArgs[0] == 'template'" class="modal-content">
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-pencil"></i>
-                            <input v-model="modalInput.name" type="text" class="modal-field-input">
+                            <i class="modal-text fa-solid fa-pencil"></i>
+                            <input v-model="modalInput.name" type="text" class="modal-element inp">
                         </div>
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-chalkboard-user"></i>
-                            <select v-for="(_, i) in modalInput.teachers" v-model="modalInput.teachers[i]" @change="editSubjectTeacher(i)" class="modal-field-input">
+                            <i class="modal-text fa-solid fa-chalkboard-user"></i>
+                            <select v-for="(_, i) in modalInput.teachers" v-model="modalInput.teachers[i]" @change="editSubjectTeacher(i)" class="modal-element inp">
                                 <option value="null"></option>
                                 <option v-for="teacher in schedule.teachers" :value="teacher.id">{{ teacher.name }}</option>
                             </select>
                         </div>
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-palette"></i>
-                            <select v-model="modalInput.color" class="modal-field-input" :style="{ 'color': schedule.colors[modalInput.color] }">
+                            <i class="modal-text fa-solid fa-palette"></i>
+                            <select v-model="modalInput.color" class="modal-element inp" :style="{ 'color': schedule.colors[modalInput.color] }">
                                 <option v-for="(color, name) in schedule.colors" :value="name" :style="{ 'color': color }" class="modal-field-coloropt">{{ name }}</option>
                             </select>
                         </div>
                     </div>
                 </div>
                 <div class="modal-btns">
-                    <button @click="modal.done" class="modal-btn btn-success">OK</button>
-                    <button @click="closeModal" class="modal-btn">Avbryt</button>
+                    <button @click="modal.done" class="modal-element btn btn-success">OK</button>
+                    <button @click="closeModal" class="modal-element btn">Avbryt</button>
                 </div>
                 <div v-if="modal.error" class="modal-err">
                     <span class="modal-err-text">{{ modal.error }}</span>
@@ -139,8 +139,8 @@
                     </button>
                 </div>
                 <div class="top">
-                    <input v-model="schedule.label" @input="markUnsaved" type="text" class="top-input" placeholder="Namn Klass (Ludvig 8D)">
-                    <input v-model="schedule.revision" @input="markUnsaved" type="text" class="top-input" placeholder="Revision (vt23.2.3)">
+                    <input v-model="schedule.label" @input="markUnsaved" type="text" class="inp" placeholder="Namn Klass (Ludvig 8D)">
+                    <input v-model="schedule.revision" @input="markUnsaved" type="text" class="inp" placeholder="Revision (vt23.2.3)">
                 </div>
                 <div :style="{'height': (schedule.end - schedule.begin) * scheduleScale + 16 + 'px'}" class="schedule">
                     <div v-for="dayI in 5" @click="$event.ctrlKey ? subjectCreateModal(dayI, $event) : void(0)" @dblclick="subjectCreateModal(dayI, $event)" class="schedule-col">
@@ -204,14 +204,14 @@
                     </button>
                     <div class="config-content">
                         <div v-for="(teacher, i) in schedule.teachers" class="teachers-field">
-                            <input v-model="teacher.name" @input="markUnsaved" type="text" class="teachers-field-input">
-                            <button @click="removeTeacher(teacher.id)" class="teachers-field-removebtn">
+                            <input v-model="teacher.name" @input="markUnsaved" type="text" class="inp">
+                            <button @click="removeTeacher(teacher.id)" class="teachers-field-btn btn btn-danger">
                                 <i class="fa-solid fa-minus-circle"></i>
                             </button>
                         </div>
                         <form @submit.prevent="addTeacher" class="teachers-field">
-                            <input v-model="scheduleTeacherInput" type="text" class="teachers-field-input">
-                            <button type="submit" class="teachers-field-addbtn">
+                            <input v-model="scheduleTeacherInput" type="text" class="inp">
+                            <button type="submit" class="teachers-field-btn btn btn-success">
                                 <i class="fa-solid fa-plus-circle"></i>
                             </button>
                         </form>
@@ -219,7 +219,7 @@
                 </div>
                 <div class="config templates" :class="{ 'config-show': !allowConfigMenuToggling || configMenus.includes('templates') }">
                     <button @click="toggleConfigMenu('templates')" :disabled="!allowConfigMenuToggling" class="config-top">
-                        <h2 class="config-top-title">Mallar</h2>
+                        <h2 class="config-top-title">Ämnen</h2>
                         <i v-if="allowConfigMenuToggling" class="fa-solid fa-angle-up config-top-icon"></i>
                     </button>
                     <div class="config-content">
@@ -227,17 +227,17 @@
                             <span class="templates-field-name">{{ template.name }}</span>
                             <span class="templates-field-teachers">{{ template.teachers.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
                             <div class="templates-field-btns">
-                                <button @click="editTemplateModal(template.id)" type="submit" class="templates-field-btn">
+                                <button @click="editTemplateModal(template.id)" type="submit" class="templates-field-editbtn btn">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
-                                <button @click="removeTemplate(template.id)" class="templates-field-btn btn-danger">
+                                <button @click="removeTemplate(template.id)" class="btn btn-danger">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
                         </div>
-                        <button @click="createTemplateModal" class="templates-addbtn">
+                        <button @click="createTemplateModal" class="btn btn-success">
                             <i class="fa-solid fa-plus-circle"></i>
-                            Ny mall
+                            Ny ämnesmall
                         </button>
                     </div>
                 </div>

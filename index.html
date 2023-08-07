@@ -27,12 +27,12 @@
                     </div>
                     <div class="modal-content">
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-chalkboard-user"></i>
-                            <span class="modal-field-span">{{ template(modal).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id).name || "NULL").join(", ") }}</span>
+                            <i class="modal-text fa-solid fa-chalkboard-user"></i>
+                            <span class="modal-text">{{ template(modal).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
                         </div>
                         <div v-if="modal.pupils?.length" class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-users"></i>
-                            <span class="modal-field-span">{{ modal.pupils.map(a => schedule.pupils[a] || a).sort().join(", ") }}</span>
+                            <i class="modal-text fa-solid fa-users"></i>
+                            <span class="modal-text">{{ modal.pupils.map(a => schedule.pupils[a] || a).sort().join(", ") }}</span>
                         </div>
                     </div>
                 </div>
@@ -49,13 +49,13 @@
                     </div>
                     <div class="modal-content">
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-clock"></i>
-                            <span class="modal-field-span">{{ humanTime(modal.time) }}</span>
+                            <i class="modal-text fa-solid fa-clock"></i>
+                            <span class="modal-text">{{ humanTime(modal.time) }}</span>
                         </div>
                     </div>
                 </div>
                 <div class="modal-btns">
-                    <button @click="removeTag(modal.id)" class="modal-btn btn-danger">Radera</button>
+                    <button @click="removeTag(modal.id)" class="modal-element btn btn-danger">Radera</button>
                 </div>
             </div>
             <form @submit.prevent="modal.done" v-if="modalType == 'input'" class="modal-container">
@@ -71,18 +71,18 @@
                     </div>
                     <div v-if="modalArgs[0] == 'tag'" class="modal-content">
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-pencil"></i>
-                            <input v-model="modalInput.label" type="text" class="modal-field-input">
+                            <i class="modal-text fa-solid fa-pencil"></i>
+                            <input v-model="modalInput.label" type="text" class="modal-element inp">
                         </div>
                         <div class="modal-field">
-                            <i class="modal-field-icon fa-solid fa-clock"></i>
-                            <input v-model="modalInput.time" type="time" class="modal-field-input">
+                            <i class="modal-text fa-solid fa-clock"></i>
+                            <input v-model="modalInput.time" type="time" class="modal-element inp">
                         </div>
                     </div>
                 </div>
                 <div class="modal-btns">
-                    <button type="submit" class="modal-btn btn-success">OK</button>
-                    <button type="button" @click="closeModal" class="modal-btn">Avbryt</button>
+                    <button @click="modal.done" class="modal-element btn btn btn-success">OK</button>
+                    <button @click="closeModal" class="modal-element btn btn">Avbryt</button>
                 </div>
             </form>
         </div>

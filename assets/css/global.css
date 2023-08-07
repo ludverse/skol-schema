@@ -1,5 +1,6 @@
 * { 
     font-family: "Source Sans Pro", Arial, sans-serif;
+
     --fg-0: #000000;
     --fg-1: #606060;
     --fg-2: #808080;
@@ -10,8 +11,83 @@
     --bg-3: #c0c0c0;
 }
 
+body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
+}
+
+.btn {
+    margin: 4px;
+    padding: 8px;
+    font-size: 1em;
+    text-decoration: none;
+    color: inherit;
+    background: transparent;
+    border: 1px solid #dfdfdf;
+    border-radius: 8px;
+    transition: 200ms;
+    cursor: default;
+}
+
+.btn:not(:disabled):is(:hover, :focus) {
+    background: #f4f4f4;
+    outline: 0;
+}
+
+.btn:disabled {
+    background: #f4f4f4;
+}
+
+.btn-icon, .btn-label {
+    margin: 2px;
+}
+
+.btn-status {
+    font-size: 0.8em;
+    color: #808080;
+}
+
+.btn-success {
+    color: #2bcbba;
+    background: #2bcbba30;
+    border-color: #2bcbba50;
+}
+
+.btn-success:not(:disabled):is(:hover, :focus) {
+    background: #2bcbba50;
+}
+
+.btn-danger {
+    color: #fc5c65;
+    background: #fc5c6530;
+    border-color: #fc5c6550;
+}
+
+.btn-danger:not(:disabled):is(:hover, :focus) {
+    background: #fc5c6550;
+}
+
+.inp {
+    margin: 4px;
+    padding: 8px;
+    font-size: 1em;
+    background: transparent;
+    border: 1px solid #dfdfdf;
+    border-radius: 8px;
+    transition: 200ms;
+}
+
+.inp:focus {
+    background: #f8f8f8;
+    outline: 0;
+}
+
+.inp:hover {
+    background: #f4f4f4;
 }
 
 body {
@@ -103,61 +179,20 @@ body {
     justify-content: left;
 }
 
-.modal-field-icon {
+.modal-text {
     margin: 8px;
 }
 
-.modal-field-span {
+.modal-element {
     margin: 8px;
-}
-
-.modal-field-input {
-    margin: 8px;
-    padding: 8px;
     flex-grow: 1;
     flex-basis: 0;
-    font-size: 1em;
-    background: transparent;
-    border: 1px solid #dfdfdf;
-    border-radius: 8px;
-    transition: 200ms;
-}
-
-.modal-field-input:focus {
-    background: #f8f8f8;
-    outline: 0;
-}
-
-.modal-field-input:hover {
-    background: #f4f4f4;
-    outline: 0;
-}
-
-.modal-field-textarea {
-    resize: none;
 }
 
 .modal-btns {
     padding: 8px;
     display: flex;
     border-top: 1px solid #dfdfdf;
-}
-
-.modal-btn {
-    margin: 8px;
-    padding: 8px;
-    flex-grow: 1;
-    flex-basis: 0;
-    font-size: 1em;
-    background: transparent;
-    border: 1px solid #dfdfdf;
-    border-radius: 8px;
-    transition: 200ms;
-}
-
-.modal-btn:is(:hover, :focus) {
-    background: #f4f4f4;
-    outline: 0;
 }
 
 .modal-err {
@@ -204,58 +239,8 @@ main {
     display: block;
 }
 
-.top-input {
-    margin: 4px;
-    padding: 8px;
-    font-size: 1em;
-    background: transparent;
-    border: 1px solid #dfdfdf;
-    border-radius: 8px;
-    transition: 200ms;
-}
-
-.top-input:focus {
-    background: #f8f8f8;
-    outline: 0;
-}
-
-.top-input:hover {
-    background: #f4f4f4;
-}
-
 .btns {
     display: flex;
-}
-
-.btn {
-    margin: 4px;
-    padding: 8px;
-    font-size: 1em;
-    text-decoration: none;
-    color: #000000;
-    background: transparent;
-    border: 1px solid #dfdfdf;
-    border-radius: 8px;
-    transition: 200ms;
-    cursor: default;
-}
-
-.btn:not(:disabled):is(:hover, :focus) {
-    background: #f4f4f4;
-    outline: 0;
-}
-
-.btn:disabled {
-    background: #f4f4f4;
-}
-
-.btn-icon, .btn-label {
-    margin: 2px;
-}
-
-.btn-status {
-    font-size: 0.8em;
-    color: #808080;
 }
 
 .schedule {
@@ -457,60 +442,14 @@ aside {
     align-items: center;
 }
 
-.teachers-field-input {
-    margin: 4px;
-    padding: 8px;
-    flex-grow: 1;
-    flex-basis: 0;
-    font-size: 1em;
-    background: transparent;
-    border: 1px solid #dfdfdf;
-    border-radius: 8px;
-    transition: 200ms;
-}
-
-.teachers-field-input:focus {
-    background: #f8f8f8;
-    outline: 0;
-}
-
-.teachers-field-input:hover {
-    background: #f4f4f4;
-    outline: 0;
-}
-
-.teachers-field-removebtn, .teachers-field-addbtn {
-    margin: 4px;
-    padding: 8px;
-    display: flex;
-    font-size: 1em;
-    background: transparent;
+.teachers-field-btn {
+    background: none;
     border: 0;
-    border-radius: 8px;
-    transition: 200ms;
-}
-
-.teachers-field-removebtn {
-    color: #fc5c65;
-}
-
-.teachers-field-removebtn:is(:hover, :focus) {
-    background: #fc5c6530;
-    outline: 0;
-}
-
-.teachers-field-addbtn {
-    color: #26de81;
-}
-
-.teachers-field-addbtn:is(:hover, :focus) {
-    background: #26de8130;
-    outline: 0;
 }
 
 .templates-field {
     margin: 4px;
-    padding: 8px;
+    padding: 4px;
     display: grid;
     border: 1px solid #dfdfdf;
     border-radius: 8px;
@@ -522,44 +461,21 @@ aside {
     background: #f4f4f4;
 }
 
+.templates-field-text {
+    margin: 4px;
+    display: grid;
+}
+
 .templates-field-name {
-    margin-bottom: 2px;
     font-weight: 600;
 }
 
 .templates-field-btns {
-    margin-top: 8px;
     display: flex;
-    gap: 8px;
 }
 
-.templates-field-btn {
-    padding: 8px;
-    font-size: 1em;
+.templates-field-editbtn {
     background: #ffffff;
-    border: 1px solid #dfdfdf;
-    border-radius: 8px;
-    transition: 200ms;
-}
-
-.templates-field-btn:is(:hover, :focus) {
-    background: #f4f4f4;
-    outline: 0;
-}
-
-.templates-addbtn {
-    margin: 4px;
-    padding: 8px;
-    font-size: 1em;
-    color: #2bcbba;
-    background: #2bcbba30;
-    border: 1px solid #2bcbba50;
-    border-radius: 8px;
-    transition: 200ms;
-}
-
-.templates-addbtn:is(:hover, :focus) {
-    background: #2bcbba50;
 }
 
 @media print {
@@ -574,33 +490,4 @@ aside {
     .title, .btns, .warning, .schedule-now, .schedule-tag, aside {
         display: none;
     }
-    
-    .top-input:last-of-type {
-        text-align: right;
-    }
-    
-    .top-input::placeholder {
-        color: transparent;
-    }
 }
-
-.btn-success {
-    color: #2bcbba;
-    background: #2bcbba30;
-    border-color: #2bcbba50;
-}
-
-.btn-success:is(:hover, :focus) {
-    background: #2bcbba50;
-}
-
-.btn-danger {
-    color: #fc5c65;
-    background: #fc5c6530;
-    border-color: #fc5c6550;
-}
-
-.btn-danger:is(:hover, :focus) {
-    background: #fc5c6550;
-}
-

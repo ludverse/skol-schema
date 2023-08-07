@@ -27,7 +27,13 @@ createApp({
             gray: "#a3a3a3",
             black: "#4b6584"
         },
-        teachers: [], 
+        teachers: [{
+            id: "a",
+            name: "Nils"
+        }, {
+            id: "b",
+            name: "Elin"
+        }],
         templates: [],
         exeptions: [],
         subjects: []
