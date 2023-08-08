@@ -12,7 +12,7 @@
     <script src="assets/js/index.html.js" type="module" defer></script>
 </head>
 <body>
-    <div @vue:mounted="mounted" :class="{ 'loaded': loaded }" id="root">
+    <div v-scope @vue:mounted="mounted" :class="{ 'loaded': loaded }" class="root viewer">
         <div v-if="modalType" class="modal">
             <div v-if="modalType == 'subject'" class="modal-container">
                 <div class="modal-main">

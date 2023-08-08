@@ -4,8 +4,17 @@ import * as vue from "https://unpkg.com/petite-vue?module";
 
 const SCHEDULE_MOUSE_OFFSET = 196;
 
+function HintPopup(props) {
+    return {
+        $template: "#hint-popup",
+        hintId: props.hintId,
+        desc: props.desc,
+        shown: props.shown
+    }
+}
+
 const app = vue.createApp({
-    $template: "root",
+    HintPopup,
     modal: null,
     modalType: null,
     modalArgs: [],
@@ -48,6 +57,8 @@ const app = vue.createApp({
     configMenus: [],
     allowConfigMenuToggling: true,
     hasUnsavedChanges: false,
+    showingHints: [],
+    discoveredHints: [],
 
     humanTime: (time, padHours = false) => {
         return `${ Math.floor(time % 1440 / 60).toString().padStart(padHours + 1, "0") }:${ (time % 1440 % 60).toString().padStart(2, "0") }`;
@@ -98,6 +109,8 @@ const app = vue.createApp({
 
     subjectCreateModal(day, e) {
         const begin = Math.round(this.mouseYToScheduleTime(e.clientY + window.scrollY) / 5) * 5;
+
+        this.markHintDiscovered(0);
 
         this.modalInput = {
             name: "",
@@ -352,11 +365,32 @@ const app = vue.createApp({
 
         this.closeModal();
     },
-    
+
+    markHintDiscovered(hintId) {
+        let hintIndex = this.showingHints.indexOf(hintId);
+        if (hintIndex != -1) this.showingHints.splice(hintIndex, 1);
+
+        if (!this.discoveredHints.includes(hintId)) {
+            this.discoveredHints.push(hintId);
+            localStorage.setItem("discoveredHints", JSON.stringify(this.discoveredHints));
+        }
+    },
+
     mounted() {
-        const rawSchedule =  localStorage.getItem("schedule");
+        const rawSchedule = localStorage.getItem("schedule");
         if (rawSchedule) {
             this.schedule = JSON.parse(rawSchedule);
+        }
+
+        const rawHintsSeen = localStorage.getItem("discoveredHints");
+        if (rawHintsSeen) {
+            this.discoveredHints = JSON.parse(rawHintsSeen);
+        }
+
+        if (!this.discoveredHints.includes(0)) {
+            setTimeout(() => {
+                if (!this.discoveredHints.includes(0)) this.showingHints.push(0);
+            }, 9000);
         }
 
         this.subjectCreationPlaceholder = NaN;
@@ -433,5 +467,5 @@ const app = vue.createApp({
 
         this.loaded = true;
     }
-}).mount("#root");
+}).mount();
 

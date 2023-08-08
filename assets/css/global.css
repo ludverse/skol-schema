@@ -51,6 +51,16 @@ h1, h2, h3, h4, h5, h6 {
     color: #808080;
 }
 
+.btn-ok {
+    color: #3498db;
+    background: #2980b930;
+    border-color: #2980b930;
+}
+
+.btn-ok:not(:disabled):is(:hover, :focus) {
+    background: #2980b950;
+}
+
 .btn-success {
     color: #2bcbba;
     background: #2bcbba30;
@@ -97,7 +107,7 @@ body {
     color: var(--fg-0);
 }
 
-#root:not(.loaded) {
+.root:not(.loaded) {
     display: none;
 }
 
@@ -108,7 +118,7 @@ body {
     background: #00000010;
     border: 1px solid #00000020;
     border-radius: 8px;
-    transition: 125ms;
+    transition: 200ms;
 }
 
 .modal-input:focus, .modal-input:focus {
@@ -254,7 +264,15 @@ main {
     position: relative;
     background: var(--bg-1);
     border-radius: 8px;
+    transition: 125ms;
+}
+
+.editor .schedule-col {
     cursor: text;
+}
+
+.editor .schedule-col:hover {
+    background: var(--bg-2);
 }
 
 .subject-container {
@@ -476,6 +494,72 @@ aside {
 
 .templates-field-editbtn {
     background: #ffffff;
+}
+
+.hint {
+    position: relative;
+}
+
+.hint-popup {
+    width: 192px;
+    position: absolute;
+    left: calc(100% + 16px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ffffff;
+    border: 1px solid #dfdfdf;
+    border-radius: 8px;
+    z-index: 900;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.hint-shown .hint-popup {
+    opacity: 1;
+    transition: 750ms;
+    pointer-events: none;
+}
+
+.hint-popup::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    display: block;
+    position: absolute;
+    right: calc(100% - 6px);
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    background: #ffffff;
+    border: solid #dfdfdf;
+    border-width: 0 0 1px 1px;
+    border-radius: 0 24px 0 0;
+}
+
+.hint-content {
+    padding: 8px;
+    padding-bottom: 0;
+    display: grid;
+}
+
+.hint-title {
+    font-weight: 600;
+}
+
+.hint-desc {
+    font-size: 0.9rem;
+}
+
+.hint-btns {
+    padding: 4px;
+    display: grid;
+}
+
+.hint-btns > button {
+    pointer-events: none;
+}
+
+.hint-shown .hint-btns > button {
+    pointer-events: all;
 }
 
 @media print {

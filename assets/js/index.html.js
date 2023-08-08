@@ -5,7 +5,6 @@ import { createApp } from "https://unpkg.com/petite-vue?module";
 const SCHEDULE_MOUSE_OFFSET = 205;
 
 createApp({
-    $template: "root",
     modal: null,
     modalType: null,
     modalInput: null,
@@ -180,4 +179,5 @@ createApp({
             this.print();
         }
     },
-}).mount("#root");
+}).mount();
+
