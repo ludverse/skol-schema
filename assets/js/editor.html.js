@@ -2,7 +2,7 @@
 const VERSION = 3;
 import * as vue from "https://unpkg.com/petite-vue?module";
 
-const SCHEDULE_MOUSE_OFFSET = 196;
+const SCHEDULE_MOUSE_OFFSET = 118;
 
 function HintPopup(props) {
     return {
@@ -48,6 +48,8 @@ const app = vue.createApp({
         exeptions: [],
         subjects: []
     },
+    scheduleBeginInput: "",
+    scheduleEndInput: "",
     scheduleScale: 2,
     scheduleTeacherInput: "",
     subjectCreationPlaceholder: NaN,
@@ -74,7 +76,7 @@ const app = vue.createApp({
     },
     dateToTime: date => date.getHours() * 60 + date.getMinutes(),
     mouseYToScheduleTime(y) {
-        return Math.round((y + this.schedule.begin) / this.scheduleScale + SCHEDULE_MOUSE_OFFSET);
+        return (y - SCHEDULE_MOUSE_OFFSET) / this.scheduleScale + this.schedule.begin
     },
     template(subject) {
         if (subject.template) {
@@ -105,6 +107,20 @@ const app = vue.createApp({
 
     closeModal() {
         this.modalType = null;
+    },
+
+    editScheduleBegin() {
+        if (!this.scheduleBeginInput) return;
+        this.schedule.begin = this.scheduleTime(this.scheduleBeginInput);
+
+        this.markUnsaved();
+    },
+
+    editScheduleEnd() {
+        if (!this.scheduleEndInput) return;
+        this.schedule.end = this.scheduleTime(this.scheduleEndInput);
+
+        this.markUnsaved();
     },
 
     subjectCreateModal(day, e) {
@@ -158,7 +174,6 @@ const app = vue.createApp({
 
     editSubjectBeginTime() {
         if (!this.modalInput.begin) return;
-        console.log(this.modalInput.begin, this.scheduleTime(this.modalInput.begin) + this.modalInput.timeDifference);
         this.modalInput.end = this.humanTime(this.scheduleTime(this.modalInput.begin) + this.modalInput.timeDifference, true);
     },
 
@@ -382,6 +397,9 @@ const app = vue.createApp({
             this.schedule = JSON.parse(rawSchedule);
         }
 
+        this.scheduleBeginInput = this.humanTime(this.schedule.begin, true);
+        this.scheduleEndInput = this.humanTime(this.schedule.end, true);
+
         const rawHintsSeen = localStorage.getItem("discoveredHints");
         if (rawHintsSeen) {
             this.discoveredHints = JSON.parse(rawHintsSeen);
@@ -452,8 +470,6 @@ const app = vue.createApp({
 
                 lastTop = boundingBox.top;
             }
-
-            console.log(hasWrapped);
 
             this.allowConfigMenuToggling = hasWrapped;
         }

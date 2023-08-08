@@ -140,6 +140,11 @@
                 </div>
                 <div class="top">
                     <input v-model="schedule.label" @input="markUnsaved" type="text" class="inp" placeholder="Namn Klass (Ludvig 8D)">
+                    <div class="top-timerange">
+                        <input v-model="scheduleBeginInput" @input="editScheduleBegin" type="time" class="inp">
+                        -
+                        <input v-model="scheduleEndInput" @input="editScheduleEnd" type="time" class="inp">
+                    </div>
                     <input v-model="schedule.revision" @input="markUnsaved" type="text" class="inp" placeholder="Revision (vt23.2.3)">
                 </div>
                 <div :style="{'height': (schedule.end - schedule.begin) * scheduleScale + 16 + 'px'}" class="schedule">
