@@ -453,7 +453,6 @@ const app = vue.createApp({
             }
         });
 
-
         const updateAllowConfigMenuToggling = () => {
             let hasWrapped = false;
             let lastTop = NaN;

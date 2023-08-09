@@ -305,6 +305,7 @@ main {
     pointer-events: all;
     z-index: 400;
     cursor: default;
+    user-select: none;
 }
 
 .subject.template-filtered {
@@ -363,6 +364,7 @@ main {
     cursor: default;
     pointer-events: all;
     text-shadow: 0 0 8px #000000;
+    user-select: none;
 }
 
 .schedule-tag::before {
@@ -503,7 +505,7 @@ aside {
 .hint-popup {
     width: 192px;
     position: absolute;
-    left: calc(100% + 16px);
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
     background: #ffffff;
@@ -517,7 +519,6 @@ aside {
 .hint-shown .hint-popup {
     opacity: 1;
     transition: 750ms;
-    pointer-events: none;
 }
 
 .hint-popup::before {

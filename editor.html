@@ -176,13 +176,13 @@
                                 <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
                             </div>
                         </div>
-                        <div
-                            v-if="dayI == 5"
-                            v-scope="HintPopup({
-                                hintId: 0,
-                                desc: 'Håll nere CTRL eller dubbelklicka för att skapa ett nytt ämne.' })"
-                            :class="{ 'hint-shown': showingHints.includes(0) }">
-                        </div>
+                    </div>
+                    <div
+                        v-scope="HintPopup({
+                            hintId: 0,
+                            desc: 'Håll nere CTRL eller dubbelklicka för att skapa ett nytt ämne.' })"
+                        :class="{ 'hint-shown': showingHints.includes(0) }"
+                        class="hint">
                     </div>
                 </div>
                 <div class="exeptions-container">
@@ -257,7 +257,7 @@
         </div>
     </div>
 
-    <template id="hint-popup" class="hint">
+    <template id="hint-popup">
         <div class="hint-popup">
             <div class="hint-content">
                 <span class="hint-title">
