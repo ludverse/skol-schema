@@ -2,7 +2,7 @@
 const VERSION = 3;
 import { createApp } from "https://unpkg.com/petite-vue?module";
 
-const SCHEDULE_MOUSE_OFFSET = 205;
+const SCHEDULE_MOUSE_OFFSET = 96;
 
 createApp({
     modal: null,
@@ -11,8 +11,8 @@ createApp({
     schedule: {
         version: 3,
         label: "",
-        revision: "vt23.0.0",
-        begin: 510,
+        revision: "ht23.0.0",
+        begin: 480,
         end: 900,
         colors: {
             red: "#fc5c65",
@@ -59,7 +59,7 @@ createApp({
     },
     dateToTime: date => date.getHours() * 60 + date.getMinutes(),
     mouseYToScheduleTime(y) {
-        return Math.round((y + this.schedule.begin) / this.scheduleScale + SCHEDULE_MOUSE_OFFSET);
+        return (y - SCHEDULE_MOUSE_OFFSET) / this.scheduleScale + this.schedule.begin
     },
     template(subject) {
         if (subject.template) {

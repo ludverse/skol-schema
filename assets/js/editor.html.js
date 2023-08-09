@@ -22,8 +22,8 @@ const app = vue.createApp({
     schedule: {
         version: 3,
         label: "",
-        revision: "vt23.0.0",
-        begin: 510,
+        revision: "ht23.0.0",
+        begin: 480,
         end: 900,
         colors: {
             red: "#fc5c65",
