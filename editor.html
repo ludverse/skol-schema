@@ -148,24 +148,14 @@
                     <input v-model="schedule.revision" @input="markUnsaved" type="text" class="inp" placeholder="Revision (vt23.2.3)">
                 </div>
                 <div :style="{'height': (schedule.end - schedule.begin) * scheduleScale + 16 + 'px'}" class="schedule">
-                    <div v-for="dayI in 5" @click="$event.ctrlKey ? subjectCreateModal(dayI, $event) : void(0)" @dblclick="subjectCreateModal(dayI, $event)" class="schedule-col">
-                        <div v-if="subjectCreationPlaceholder" class="subject-container">
-                            <div
-                                :style="{
-                                    '--height': (60) * scheduleScale + 'px',
-                                    'top': (subjectCreationPlaceholder - schedule.begin) * scheduleScale - 1 + 'px'
-                                }"
-                                class="schedule-row subject subject-placeholder">
-                                <span class="subject-times">{{ humanTime(subjectCreationPlaceholder) }} - {{ humanTime(subjectCreationPlaceholder + 60) }}</span>
-                            </div>
-                        </div>
-                        <div v-for="subject in schedule.subjects.filter(a => a.begin > (dayI - 1) * 1440 && a.begin < dayI * 1440)" class="subject-container">
-                            <div
+                    <div v-for="dayI in 5" @click="$event.ctrlKey ? subjectCreateModal(dayI - 1, $event) : void(0)" @dblclick="subjectCreateModal(dayI - 1, $event)" class="schedule-col">
+                        <div class="subject-container">
+                            <div v-for="subject in schedule.subjects.filter(a => a.begin > (dayI - 1) * 1440 && a.begin < dayI * 1440)"
                                 @click="$event.ctrlKey ? void(0) : showModal('subject', subject)"
                                 :style="{
                                     '--height': subject.length * scheduleScale + 'px',
                                     'background': schedule.colors[template(subject).color],
-                                    'top': (subject.begin - 1440 * (dayI - 1) - schedule.begin) * scheduleScale - 1 + 'px'
+                                    'top': (subject.begin % 1440 - schedule.begin) * scheduleScale + 'px'
                                 }"
                                 :class="{
                                     'template-filtered': templateFilter ? templateFilter != subject.template : false,
@@ -175,10 +165,17 @@
                                 <span class="subject-times">{{ humanTime(subject.begin) }} - {{ humanTime(subject.begin + subject.length) }}</span>
                                 <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
                             </div>
+                            <div v-if="subjectCreationPlaceholder"
+                                :style="{
+                                    '--height': 60 * scheduleScale + 'px',
+                                    'top': (subjectCreationPlaceholder - schedule.begin) * scheduleScale + 'px'
+                                }"
+                                class="schedule-row subject subject-placeholder">
+                                <span class="subject-times">{{ humanTime(subjectCreationPlaceholder) }} - {{ humanTime(subjectCreationPlaceholder + 60) }}</span>
+                            </div>
                         </div>
                     </div>
-                    <div
-                        v-scope="HintPopup({
+                    <div v-scope="HintPopup({
                             hintId: 0,
                             desc: 'Håll nere CTRL eller dubbelklicka för att skapa ett nytt ämne.' })"
                         :class="{ 'hint-shown': showingHints.includes(0) }"

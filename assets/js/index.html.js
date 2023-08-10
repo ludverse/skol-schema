@@ -59,7 +59,7 @@ createApp({
     },
     dateToTime: date => date.getHours() * 60 + date.getMinutes(),
     mouseYToScheduleTime(y) {
-        return (y - SCHEDULE_MOUSE_OFFSET) / this.scheduleScale + this.schedule.begin
+        return Math.round((y - SCHEDULE_MOUSE_OFFSET) / this.scheduleScale + this.schedule.begin - 4)
     },
     template(subject) {
         if (subject.template) {
@@ -87,15 +87,22 @@ createApp({
     },
 
     createTagModal(dayI, e) {
-        this.modalInput = { time: this.humanTime(this.mouseYToScheduleTime(e.clientY + window.scrollY), true), label: "" }
-        this.showModal("input:tag", { done: this.createTag.bind(this, dayI) });
+        this.tagCreationPlaceholder = NaN;
+
+        const time = this.mouseYToScheduleTime(e.clientY + window.scrollY);
+
+        this.modalInput = { time: this.humanTime(time, true), label: "" }
+        this.showModal("input:tag", {
+            done: this.createTag.bind(this, dayI),
+            error: null
+        });
     },
 
     createTag(dayI) {
-        if (!this.modalInput.label) return;
+        if (!this.modalInput.label) return this.modal.error = "Skriv in ett namn för markören";
 
         const time = this.scheduleTime(this.modalInput.time, dayI);
-        if (time < this.schedule.begin + 1440 * dayI || time > this.schedule.end + 1440 * dayI) return;
+        if (time < this.schedule.begin + 1440 * dayI || time > this.schedule.end + 1440 * dayI) return this.modal.error = "Tiden är utanför schemat";
         
         this.closeModal();
         
@@ -123,30 +130,18 @@ createApp({
             this.schedule = JSON.parse(rawSchedule);
         }
 
-        this.tagCreationPlaceholder = NaN;
         window.addEventListener("keydown", e => {
             if (e.key == "Escape") {
                 this.closeModal();
             }
         });
 
-        let lastClientY = 0;
-        const updateTagCreationPlaceholder = e => {
-            lastClientY = e.clientY || lastClientY;
-
+        window.addEventListener("mousemove", e => {
             if (this.modalType) return;
 
             if (e.ctrlKey) {
-                this.tagCreationPlaceholder = Math.round(this.mouseYToScheduleTime(lastClientY + window.scrollY));
+                this.tagCreationPlaceholder = this.mouseYToScheduleTime(e.clientY + window.scrollY);
             } else if (this.tagCreationPlaceholder) {
-                this.tagCreationPlaceholder = NaN;
-            }
-        }
-        window.addEventListener("mousemove", updateTagCreationPlaceholder);
-        window.addEventListener("keydown", updateTagCreationPlaceholder);
-
-        window.addEventListener("keyup", e => {
-            if (e.key == "Control") {
                 this.tagCreationPlaceholder = NaN;
             }
         });
@@ -157,7 +152,7 @@ createApp({
         }
 
         setInterval(() => this.today = (new Date().getDay()), 60000);
-        setInterval(() => this.now = (new Date().getHours() * 60 + new Date().getMinutes()), 1000);
+        setInterval(() => this.now = (new Date().getHours() * 60 + new Date().getMinutes()), 4000);
 
         const d = new Date();
         const tagsExpire = localStorage.getItem("tagsExpire");

@@ -260,11 +260,13 @@ main {
 
 .schedule-col {
     margin: 4px;
+    padding: 4px;
     width: 128px;
-    position: relative;
+    box-sizing: border-box;
     background: var(--bg-1);
     border-radius: 8px;
     transition: 125ms;
+    user-select: none;
 }
 
 .editor .schedule-col {
@@ -276,11 +278,7 @@ main {
 }
 
 .subject-container {
-    width: calc(100% - 8px);
-    height: calc(100% - 8px);
-    position: absolute;
-    top: 5px;
-    left: 4px;
+    position: relative;
     pointer-events: none;
 }
 
@@ -305,7 +303,6 @@ main {
     pointer-events: all;
     z-index: 400;
     cursor: default;
-    user-select: none;
 }
 
 .subject.template-filtered {
@@ -364,7 +361,6 @@ main {
     cursor: default;
     pointer-events: all;
     text-shadow: 0 0 8px #000000;
-    user-select: none;
 }
 
 .schedule-tag::before {

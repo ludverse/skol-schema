@@ -76,7 +76,7 @@ const app = vue.createApp({
     },
     dateToTime: date => date.getHours() * 60 + date.getMinutes(),
     mouseYToScheduleTime(y) {
-        return (y - SCHEDULE_MOUSE_OFFSET) / this.scheduleScale + this.schedule.begin
+        return Math.round((y - SCHEDULE_MOUSE_OFFSET) / this.scheduleScale + this.schedule.begin - 4)
     },
     template(subject) {
         if (subject.template) {
@@ -123,10 +123,11 @@ const app = vue.createApp({
         this.markUnsaved();
     },
 
-    subjectCreateModal(day, e) {
-        const begin = Math.round(this.mouseYToScheduleTime(e.clientY + window.scrollY) / 5) * 5;
-
+    subjectCreateModal(dayI, e) {
+        this.subjectCreationPlaceholder = NaN;
         this.markHintDiscovered(0);
+
+        const begin = Math.round(this.mouseYToScheduleTime(e.clientY + window.scrollY) / 5) * 5;
 
         this.modalInput = {
             name: "",
@@ -134,12 +135,11 @@ const app = vue.createApp({
             end: this.humanTime(begin + 60, true),
             timeDifference: 60,
             teachers: [ "null" ],
-            color: Object.keys(this.schedule.colors)[0],
-            error: null
+            color: Object.keys(this.schedule.colors)[0]
         }
         this.showModal("input:subject", {
             label: "Nytt ämne",
-            done: this.createSubject.bind(this, day),
+            done: this.createSubject.bind(this, dayI),
             error: null
         });
     },
@@ -195,11 +195,12 @@ const app = vue.createApp({
         if (!this.modalInput.name) return this.modal.error = "Skriv in ett namn för ämnet";
         if (this.modalInput.teachers.length <= 1) return this.modal.error = "Skriv in minst 1 lärare";
 
-        const begin = this.scheduleTime(this.modalInput.begin, dayI - 1);
-        if (begin < this.schedule.begin + 1440 * (dayI - 1) || begin > this.schedule.end + 1440 * (dayI - 1)) return this.modal.error = "Startdatumet är utanför schemat";
+        const begin = this.scheduleTime(this.modalInput.begin, dayI);
+        if (begin < this.schedule.begin + 1440 * dayI || begin > this.schedule.end + 1440 * dayI) return this.modal.error = "Sluttiden är utanför schemat";
 
-        const length = this.scheduleTime(this.modalInput.end, dayI - 1) - begin;
-        if (length < 0) return this.modal.error = "Slutdatumet är före startdatumet";
+        const length = this.scheduleTime(this.modalInput.end, dayI) - begin;
+        if (length < 0) return this.modal.error = "Sluttiden är före startdatumet";
+        if (begin + length > this.schedule.end + 1440 * dayI) return this.modal.error = "Sluttiden är utanför schemat";
 
         this.closeModal();
 
@@ -228,14 +229,15 @@ const app = vue.createApp({
         if (!this.modalInput.name) return this.modal.error = "Skriv in ett namn för ämnet";
         if (this.modalInput.teachers.length <= 1) return this.modal.error = "Skriv in minst 1 lärare";
 
-        this.closeModal();
-    
         const begin = this.scheduleTime(this.modalInput.begin, dayI - 1);
-        if (begin < this.schedule.begin + 1440 * (dayI - 1) || begin > this.schedule.end + 1440 * (dayI - 1)) return;
+        if (begin < this.schedule.begin + 1440 * (dayI - 1) || begin > this.schedule.end + 1440 * (dayI - 1)) return this.modal.error = "Startdatumet är utanför schemat";
 
         const length = this.scheduleTime(this.modalInput.end, dayI - 1) - begin;
-        if (length < 0) return;
+        if (length < 0) return this.modal.error = "Slutdatumet är före startdatumet";
+        if (begin + length > this.schedule.end + 1440 * (dayI - 1)) return this.modal.error = "Slutdatument är utanför schemat";
 
+        this.closeModal();
+    
         let data = {};
         const template = this.schedule.templates.find(template => template.id == this.modalInput.template);
 
@@ -411,7 +413,6 @@ const app = vue.createApp({
             }, 9000);
         }
 
-        this.subjectCreationPlaceholder = NaN;
         window.addEventListener("keydown", e => {
             if (e.key == "Escape") {
                 this.closeModal();
@@ -432,23 +433,12 @@ const app = vue.createApp({
             }
         });
 
-        let lastClientY = 0;
-        const updateSubjectCreationPlaceholder = e => {
-            lastClientY = e.clientY || lastClientY;
-
+        window.addEventListener("mousemove", e => {
             if (this.modalType) return;
 
             if (e.ctrlKey) {
-                this.subjectCreationPlaceholder = Math.round(this.mouseYToScheduleTime(lastClientY + window.scrollY) / 5) * 5;
+                this.subjectCreationPlaceholder = Math.max(this.schedule.begin, Math.round(this.mouseYToScheduleTime(e.clientY + window.scrollY) / 5) * 5);
             } else if (this.subjectCreationPlaceholder) {
-                this.subjectCreationPlaceholder = NaN;
-            }
-        }
-        window.addEventListener("mousemove", updateSubjectCreationPlaceholder);
-        window.addEventListener("keydown", updateSubjectCreationPlaceholder);
-
-        window.addEventListener("keyup", e => {
-            if (e.key == "Control") {
                 this.subjectCreationPlaceholder = NaN;
             }
         });
