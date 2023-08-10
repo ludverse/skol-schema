@@ -106,8 +106,12 @@
                     <span class="top-label">{{ schedule.label }}</span>
                     <span class="top-label">{{ schedule.revision }}</span>
                 </div>
-                <div :style="{'height': (schedule.end - schedule.begin) * scheduleScale + 16 + 'px'}" class="schedule">
-                    <div v-for="dayI in 5" @click="$event.ctrlKey ? createTagModal(dayI - 1, $event) : void(0)" class="schedule-col">
+                <div class="schedule">
+                    <div v-for="dayI in 5"
+                         @click="$event.ctrlKey ? createTagModal(dayI - 1, $event) : void(0)"
+                         @mousemove="updateTagCreationPlaceholder($event)"
+                        :style="{'height': (schedule.end - schedule.begin) * scheduleScale + 8 + 'px'}"
+                        class="schedule-col">
                         <div class="subject-container">
                             <div v-for="subject in schedule.subjects.filter(a => a.begin > (dayI - 1) * 1440 && a.begin < dayI * 1440)" 
                                 @click="$event.ctrlKey ? void(0) : showModal('subject', subject)"

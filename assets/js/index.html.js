@@ -2,8 +2,6 @@
 const VERSION = 3;
 import { createApp } from "https://unpkg.com/petite-vue?module";
 
-const SCHEDULE_MOUSE_OFFSET = 96;
-
 createApp({
     modal: null,
     modalType: null,
@@ -58,8 +56,16 @@ createApp({
         return split[0] * 60 + Number(split[1]) + day * 1440;
     },
     dateToTime: date => date.getHours() * 60 + date.getMinutes(),
-    mouseYToScheduleTime(y) {
-        return Math.round((y - SCHEDULE_MOUSE_OFFSET) / this.scheduleScale + this.schedule.begin - 4)
+    mouseYToScheduleTime(clientY) {
+        const scheduleCol = document.getElementsByClassName("schedule-col")[0];
+        const colRect = scheduleCol.getBoundingClientRect();
+
+        const relativeY = clientY - colRect.top - 4;
+
+        const time = Math.round(relativeY / this.scheduleScale + this.schedule.begin);
+        const limited = Math.max(this.schedule.begin, Math.min(this.schedule.end, time));
+
+        return limited;
     },
     template(subject) {
         if (subject.template) {
@@ -124,6 +130,16 @@ createApp({
         this.closeModal();
     },
 
+    updateTagCreationPlaceholder(e) {
+        if (this.modalType) return;
+
+        if (e.ctrlKey) {
+            this.tagCreationPlaceholder = this.mouseYToScheduleTime(e.clientY);
+        } else if (this.tagCreationPlaceholder !== NaN) {
+            this.tagCreationPlaceholder = NaN;
+        }
+    },
+
     mounted() {
         const rawSchedule = localStorage.getItem("schedule");
         if (rawSchedule) {
@@ -133,16 +149,6 @@ createApp({
         window.addEventListener("keydown", e => {
             if (e.key == "Escape") {
                 this.closeModal();
-            }
-        });
-
-        window.addEventListener("mousemove", e => {
-            if (this.modalType) return;
-
-            if (e.ctrlKey) {
-                this.tagCreationPlaceholder = this.mouseYToScheduleTime(e.clientY + window.scrollY);
-            } else if (this.tagCreationPlaceholder) {
-                this.tagCreationPlaceholder = NaN;
             }
         });
 

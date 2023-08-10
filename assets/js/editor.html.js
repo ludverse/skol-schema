@@ -2,8 +2,6 @@
 const VERSION = 3;
 import * as vue from "https://unpkg.com/petite-vue?module";
 
-const SCHEDULE_MOUSE_OFFSET = 118;
-
 function HintPopup(props) {
     return {
         $template: "#hint-popup",
@@ -75,8 +73,16 @@ const app = vue.createApp({
         return split[0] * 60 + Number(split[1]) + day * 1440;
     },
     dateToTime: date => date.getHours() * 60 + date.getMinutes(),
-    mouseYToScheduleTime(y) {
-        return Math.round((y - SCHEDULE_MOUSE_OFFSET) / this.scheduleScale + this.schedule.begin - 4)
+    mouseYToScheduleTime(clientY) {
+        const scheduleCol = document.getElementsByClassName("schedule-col")[0];
+        const colRect = scheduleCol.getBoundingClientRect();
+
+        const relativeY = clientY - colRect.top - 4;
+
+        const time = Math.round(relativeY / this.scheduleScale + this.schedule.begin);
+        const limited = Math.max(this.schedule.begin, Math.min(this.schedule.end, time));
+
+        return limited;
     },
     template(subject) {
         if (subject.template) {
@@ -372,6 +378,16 @@ const app = vue.createApp({
         this.markUnsaved();
     },
     
+    updateSubjectCreationPlaceholder(e) {
+        if (this.modalType) return;
+
+        if (e.ctrlKey) {
+            this.subjectCreationPlaceholder = Math.round(this.mouseYToScheduleTime(e.clientY) / 5) * 5;
+        } else if (this.subjectCreationPlaceholder !== NaN) {
+            this.subjectCreationPlaceholder = NaN;
+        }
+    },
+
     removeTemplate(templateId) {
         this.schedule.subjects = this.schedule.subjects.filter(subject => subject.template != templateId);
         this.templateFilter = null;
@@ -430,16 +446,6 @@ const app = vue.createApp({
             if (this.hasUnsavedChanges) {
                 e.preventDefault();
                 return (e.returnValue = "Du har osparade ändringar, vill du fortsätta?");
-            }
-        });
-
-        window.addEventListener("mousemove", e => {
-            if (this.modalType) return;
-
-            if (e.ctrlKey) {
-                this.subjectCreationPlaceholder = Math.max(this.schedule.begin, Math.round(this.mouseYToScheduleTime(e.clientY + window.scrollY) / 5) * 5);
-            } else if (this.subjectCreationPlaceholder) {
-                this.subjectCreationPlaceholder = NaN;
             }
         });
 
