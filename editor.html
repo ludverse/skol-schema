@@ -55,8 +55,8 @@
                         <span v-if="modalArgs[0] == 'template'" class="modal-label">
                             <span>{{ modalInput.name || modal.label }}</span>
                         </span>
-                        <span v-if="modalArgs[0] == 'import'" class="modal-label">
-                            <span>Importera schema</span>
+                        <span v-if="modalArgs[0] == 'schedule-length'" class="modal-label">
+                            <span>Ändra schemats längd</span>
                         </span>
                         <button @click="closeModal" class="modal-close">
                             <i class="fa-solid fa-xmark"></i>
@@ -114,6 +114,18 @@
                             </select>
                         </div>
                     </div>
+                    <div v-if="modalArgs[0] == 'schedule-length'" class="modal-content">
+                        <div class="modal-field">
+                            <i class="modal-text fa-solid fa-calendar"></i>
+                            Börja:
+                            <input v-model="modalInput.scheduleBegin" type="time" class="modal-element inp">
+                        </div>
+                        <div class="modal-field">
+                            <i class="modal-text fa-regular fa-calendar"></i>
+                            Sluta:
+                            <input v-model="modalInput.scheduleEnd" type="time" class="modal-element inp">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-btns">
                     <button @click="modal.done" class="modal-element btn btn-success">OK</button>
@@ -141,9 +153,17 @@
                 <div class="top">
                     <input v-model="schedule.label" @input="markUnsaved" type="text" class="inp" placeholder="Namn Klass (Ludvig 8D)">
                     <div class="top-timerange">
-                        <input v-model="scheduleBeginInput" @input="editScheduleBegin" type="time" class="inp">
+                        <button @click="editScheduleLengthModal" class="btn">
+                            {{ Math.floor(schedule.begin % 1440 / 60).toString().padStart(2, "0") }}
+                            :
+                            {{ (schedule.begin % 1440 % 60).toString().padStart(2, "0") }}
+                        </button>
                         -
-                        <input v-model="scheduleEndInput" @input="editScheduleEnd" type="time" class="inp">
+                        <button @click="editScheduleLengthModal" class="btn">
+                            {{ Math.floor(schedule.end % 1440 / 60).toString().padStart(2, "0") }}
+                            :
+                            {{ (schedule.end % 1440 % 60).toString().padStart(2, "0") }}
+                        </button>
                     </div>
                     <input v-model="schedule.revision" @input="markUnsaved" type="text" class="inp" placeholder="Revision (vt23.2.3)">
                 </div>

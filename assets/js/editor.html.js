@@ -46,8 +46,6 @@ const app = vue.createApp({
         exeptions: [],
         subjects: []
     },
-    scheduleBeginInput: "",
-    scheduleEndInput: "",
     scheduleScale: 2,
     scheduleTeacherInput: "",
     subjectCreationPlaceholder: NaN,
@@ -278,6 +276,33 @@ const app = vue.createApp({
     markUnsaved() {
         console.log("unsaved change", this);
         this.hasUnsavedChanges = JSON.stringify(this.schedule) != localStorage.getItem("schedule");
+    },
+
+    editScheduleLengthModal() {
+        this.modalInput = {
+            scheduleBegin: this.humanTime(this.schedule.begin, true),
+            scheduleEnd: this.humanTime(this.schedule.end, true),
+        }
+
+        this.showModal("input:schedule-length", {
+            done: this.editScheduleLength,
+            error: null
+        });
+    },
+
+    editScheduleLength() {
+        if (!this.modalInput.scheduleBegin) return this.modal.error = "Ange en starttid för schemat";
+        if (!this.modalInput.scheduleEnd) return this.modal.error = "Ange en sluttid för schemat";
+
+        this.closeModal();
+
+        const begin = this.scheduleTime(this.modalInput.scheduleBegin);
+        this.schedule.begin = begin;
+
+        const end = this.scheduleTime(this.modalInput.scheduleEnd);
+        this.schedule.end = end;
+
+        this.markUnsaved();
     },
 
     toggleConfigMenu(menuType) {

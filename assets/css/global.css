@@ -39,6 +39,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn:disabled {
+    color: #808080;
     background: #f4f4f4;
 }
 
@@ -91,12 +92,17 @@ h1, h2, h3, h4, h5, h6 {
     transition: 200ms;
 }
 
-.inp:focus {
+.inp:not(:disabled):focus {
     background: #f8f8f8;
     outline: 0;
 }
 
-.inp:hover {
+.inp:not(:disabled):hover {
+    background: #f4f4f4;
+}
+
+.inp:disabled {
+    color: #808080;
     background: #f4f4f4;
 }
 
