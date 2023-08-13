@@ -20,10 +20,15 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
 
+b {
+    font-weight: 600;
+}
+
 .btn {
     margin: 4px;
     padding: 8px;
     font-size: 1em;
+    text-align: center;
     text-decoration: none;
     color: inherit;
     background: transparent;

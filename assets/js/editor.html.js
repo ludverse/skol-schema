@@ -55,6 +55,7 @@ const app = vue.createApp({
     configMenus: [],
     allowConfigMenuToggling: true,
     hasUnsavedChanges: false,
+    shouldSkipUnsavedMessage: false,
     showingHints: [],
     discoveredHints: [],
 
@@ -268,6 +269,20 @@ const app = vue.createApp({
         this.closeModal();
     },
 
+    unsavedModal(e, forwardUrl) {
+        if (!this.hasUnsavedChanges) return;
+
+        this.showModal("unsaved", {
+            url: forwardUrl
+        });
+        e.preventDefault();
+    },
+
+    skipUnsavedMessage(forwardUrl) {
+        this.shouldSkipUnsavedMessage = true;
+        location.replace(forwardUrl);
+    },
+
     saveSchedule() {
         localStorage.setItem("schedule", JSON.stringify(this.schedule));
         this.hasUnsavedChanges = false;
@@ -275,7 +290,9 @@ const app = vue.createApp({
 
     markUnsaved() {
         console.log("unsaved change", this);
-        this.hasUnsavedChanges = JSON.stringify(this.schedule) != localStorage.getItem("schedule");
+        if (!this.hasUnsavedChanges) {
+            this.hasUnsavedChanges = true;
+        }
     },
 
     editScheduleLengthModal() {
@@ -468,7 +485,7 @@ const app = vue.createApp({
         });
 
         window.addEventListener("beforeunload", e => {
-            if (this.hasUnsavedChanges) {
+            if (this.hasUnsavedChanges && !this.shouldSkipUnsavedMessage) {
                 e.preventDefault();
                 return (e.returnValue = "Du har osparade ändringar, vill du fortsätta?");
             }
