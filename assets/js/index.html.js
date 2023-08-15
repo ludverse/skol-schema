@@ -95,7 +95,7 @@ createApp({
     createTagModal(dayI, e) {
         this.tagCreationPlaceholder = NaN;
 
-        const time = this.mouseYToScheduleTime(e.clientY + window.scrollY);
+        const time = this.mouseYToScheduleTime(e.clientY);
 
         this.modalInput = { time: this.humanTime(time, true), label: "" }
         this.showModal("input:tag", {

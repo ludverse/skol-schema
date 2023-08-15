@@ -120,19 +120,21 @@
                                     'background': schedule.colors[template(subject).color],
                                     'top': (subject.begin % 1440 - schedule.begin) * scheduleScale + 'px'
                                 }" class="schedule-row subject">
-                                <span class="subject-name">{{ template(subject).name }}</span>
-                                <span class="subject-times">{{ humanTime(subject.begin) }} - {{ humanTime(subject.begin + subject.length) }}</span>
-                                <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id).name || "NULL").join(", ") }}</span>
+                                <div class="subject-content">
+                                    <span class="subject-name">{{ template(subject).name }}</span>
+                                    <span class="subject-times">{{ humanTime(subject.begin) }} - {{ humanTime(subject.begin + subject.length) }}</span>
+                                    <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                                </div>
                             </div>
                             <div v-if="today - 1 == dayI - 1 && now > schedule.begin && now < schedule.end" :style="{ top: (now - schedule.begin) * scheduleScale + 'px' }" class="schedule-now"></div>
                             <span v-if="tagCreationPlaceholder"
-                                :style="{ top: (tagCreationPlaceholder - schedule.begin) * scheduleScale + 'px' }"
+                                :style="{ '--top': (tagCreationPlaceholder - schedule.begin) * scheduleScale }"
                                 class="schedule-tag schedule-tag-placeholder">
                                 <small>{{ humanTime(tagCreationPlaceholder) }}</small>
                             </span>
                             <span v-for="tag in tags.filter(tag => tag.time > (dayI - 1) * 1440 && tag.time < dayI * 1440)"
                                 @click="showModal('tag', tag)"
-                                :style="{ top: (tag.time % 1440 - schedule.begin) * scheduleScale + 'px' }"
+                                :style="{ '--top': (tag.time % 1440 - schedule.begin) * scheduleScale }"
                                 class="schedule-tag">
                                 <small>{{ humanTime(tag.time) }}</small>
                                 {{ tag.label }}

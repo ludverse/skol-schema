@@ -1,14 +1,37 @@
 * { 
     font-family: "Source Sans Pro", Arial, sans-serif;
 
-    --fg-0: #000000;
-    --fg-1: #606060;
-    --fg-2: #808080;
-    --fg-3: #a0a0a0;
+    --fg-black: #000000;
+    --fg-dgray: #4d4d4d;
+    --fg-gray: #808080;
+    --fg-white: #ffffff;
+
     --bg-0: #ffffff;
     --bg-1: #e0e0e0;
     --bg-2: #d0d0d0;
     --bg-3: #c0c0c0;
+
+    --border-colour: #dfdfdf;
+    --border-props: 1px solid;
+    --border: var(--border-props) var(--border-colour);
+    --shadow-colour: #00000040;
+    --subject-shadow: 0 0 8px 2px var(--shadow-colour);
+    --tag-shadow: 0 0 8px var(--shadow-colour);
+    --transition-hover: 200ms;
+
+    --btn-fg: var(--fg-black);
+    --btn-fg-disabled: var(--fg-gray);
+    --btn-status-fg: var(--fg-gray);
+    --btn-bg: #ffffff;
+    --btn-bg-hover: #f4f4f4;
+    --btn-bg-disabled: #f4f4f4;
+    --btn-border-colour: var(--border-colour);
+
+    --inp-placeholder: var(--fg-dgray);
+    --inp-bg: #ffffff;
+    --inp-bg-hover: #f4f4f4;
+    --inp-bg-focus: #f8f8f8;
+    --inp-bg-disabled: #f4f4f4;
 }
 
 body {
@@ -30,22 +53,22 @@ b {
     font-size: 1em;
     text-align: center;
     text-decoration: none;
-    color: inherit;
-    background: transparent;
-    border: 1px solid #dfdfdf;
+    color: var(--btn-fg);
+    background: var(--btn-bg);
+    border: var(--border-props) var(--btn-border-colour);
     border-radius: 8px;
-    transition: 200ms;
+    transition: var(--transition-hover);
     cursor: default;
 }
 
 .btn:not(:disabled):is(:hover, :focus) {
-    background: #f4f4f4;
+    background: var(--btn-bg-hover);
     outline: 0;
 }
 
 .btn:disabled {
-    color: #808080;
-    background: #f4f4f4;
+    color: var(--btn-fg-disabled);
+    background: var(--btn-bg-disabled);
 }
 
 .btn-icon, .btn-label {
@@ -54,37 +77,28 @@ b {
 
 .btn-status {
     font-size: 0.8em;
-    color: #808080;
+    color: var(--btn-status-fg);
 }
 
 .btn-ok {
-    color: #3498db;
-    background: #2980b930;
-    border-color: #2980b930;
-}
-
-.btn-ok:not(:disabled):is(:hover, :focus) {
-    background: #2980b950;
+    --btn-fg: #3498db;
+    --btn-bg: #2980b930;
+    --btn-border-colour: #2980b930;
+    --btn-bg-hover: #2980b950;
 }
 
 .btn-success {
-    color: #2bcbba;
-    background: #2bcbba30;
-    border-color: #2bcbba50;
-}
-
-.btn-success:not(:disabled):is(:hover, :focus) {
-    background: #2bcbba50;
+    --btn-fg: #2bcbba;
+    --btn-bg: #2bcbba30;
+    --btn-border-colour: #2bcbba50;
+    --btn-bg-hover: #2bcbba50;
 }
 
 .btn-danger {
-    color: #fc5c65;
-    background: #fc5c6530;
-    border-color: #fc5c6550;
-}
-
-.btn-danger:not(:disabled):is(:hover, :focus) {
-    background: #fc5c6550;
+    --btn-fg: #fc5c65;
+    --btn-bg: #fc5c6530;
+    --btn-border-colour: #fc5c6550;
+    --btn-bg-hover: #fc5c6550;
 }
 
 .inp {
@@ -92,50 +106,38 @@ b {
     padding: 8px;
     font-size: 1em;
     background: transparent;
-    border: 1px solid #dfdfdf;
+    border: var(--border);
     border-radius: 8px;
-    transition: 200ms;
+    transition: var(--transition-hover);
 }
 
 .inp:not(:disabled):focus {
-    background: #f8f8f8;
+    background: var(--inp-bg-focus);
     outline: 0;
 }
 
 .inp:not(:disabled):hover {
-    background: #f4f4f4;
+    background: var(--inp-bg-hover);
 }
 
 .inp:disabled {
-    color: #808080;
-    background: #f4f4f4;
+    color: var(--fg-gray);
+    background: var(--inp-bg-disabled);
+}
+
+.inp::placeholder {
+    color: var(--inp-placeholder);
 }
 
 body {
     margin: 8px;
     display: grid;
     background: var(--bg-0);
-    color: var(--fg-0);
+    color: var(--fg-black);
 }
 
 .root:not(.loaded) {
     display: none;
-}
-
-.modal-input {
-    padding: 8px;
-    width: 100%;
-    font-size: 1em;
-    background: #00000010;
-    border: 1px solid #00000020;
-    border-radius: 8px;
-    transition: 200ms;
-}
-
-.modal-input:focus, .modal-input:focus {
-    background: #00000020;
-    border-color: #00000030;
-    outline: none;
 }
 
 .modal {
@@ -144,8 +146,8 @@ body {
     left: 50%;
     top: 64px;
     transform: translateX(-50%);
-    background: #ffffff;
-    border: 1px solid #dfdfdf;
+    background: var(--bg-0);
+    border: var(--border);
     border-radius: 8px;
     z-index: 800;
 }
@@ -177,11 +179,11 @@ body {
     width: 28px;
     height: 28px;
     font-size: 1em;
-    color: #808080;
+    color: var(--fg-gray);
     background: transparent;
     border: 0;
     border-radius: 8px;
-    transition: 200ms;
+    transition: var(--transition-hover);
 }
 
 .modal-close:is(:hover, :focus) {
@@ -213,7 +215,7 @@ body {
 .modal-btns {
     padding: 8px;
     display: flex;
-    border-top: 1px solid #dfdfdf;
+    border-top: var(--border);
 }
 
 .modal-err {
@@ -221,7 +223,7 @@ body {
     display: flex;
     justify-content: center;
     background: #fc5c6530;
-    border-top: 1px solid #fc5c6550;
+    border-top: var(--border-props) #fc5c6550;
 }
 
 .modal-err-text {
@@ -276,7 +278,7 @@ main {
     box-sizing: border-box;
     background: var(--bg-1);
     border-radius: 8px;
-    transition: 125ms;
+    transition: var(--transition-hover);
     user-select: none;
 }
 
@@ -302,11 +304,8 @@ main {
 }
 
 .subject {
-    padding: 6px;
     width: 100%;
     height: var(--height);
-    display: flex;
-    flex-direction: column;
     color: #ffffff;
     border-radius: 4px;
     overflow: hidden;
@@ -321,7 +320,7 @@ main {
 }
 
 .subject.template-filter-highlight {
-    box-shadow: 0 0 8px 2px #00000040;
+    box-shadow: var(--subject-shadow);
 }
 
 .schedule-col:not(.tag-mode) .subject:hover {
@@ -329,14 +328,20 @@ main {
     height: min-content !important;
     min-height: var(--height);
     left: 0;
-    box-shadow: 0 0 8px 2px #00000040;
+    box-shadow: var(--subject-shadow);
     z-index: 600;
+}
+
+.subject-content {
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
 }
 
 .subject-placeholder {
     --divide: 1;
     --position: 1;
-    background: #808080;
+    background: var(--fg-gray);
     opacity: 0.5;
     z-index: 700;
     pointer-events: none;
@@ -364,9 +369,11 @@ main {
 }
 
 .schedule-tag {
+    padding: 4px 0;
     width: 100%;
-    font-size: 0;
     position: absolute;
+    top: calc(calc(var(--top) * 1px) - 4px);
+    font-size: 0;
     z-index: 600;
     cursor: default;
     pointer-events: all;
@@ -383,12 +390,12 @@ main {
 
 .schedule-tag:hover {
     font-size: inherit;
-    color: #ffffff;
+    color: var(--fg-white);
 }
 
 .schedule-tag-placeholder {
     font-size: initial;
-    color: #ffffff;
+    color: var(--fg-white);
     pointer-events: none;
 }
 
@@ -405,7 +412,7 @@ main {
 }
 
 .exeption-date {
-    color: var(--fg-2);
+    color: var(--fg-gray);
 }
 
 aside {
@@ -428,12 +435,12 @@ aside {
     justify-content: space-between;
     align-items: center;
     background: 0;
-    border: 1px solid transparent;
+    border: var(--btn-border);
     border-radius: 8px;
 }
 
 .config-top:not(:disabled):is(:hover, :focus) {
-    border-color: #dfdfdf;
+    border-color: var(--btn-border);
 }
 
 .config-top:disabled {
@@ -445,7 +452,7 @@ aside {
 }
 
 .config-top-icon {
-    transition: 200ms;
+    transition: var(--transition-hover);
 }
 
 .config-show .config-top-icon {
@@ -459,13 +466,17 @@ aside {
 .config-content {
     height: 0;
     display: grid;
-    transition: 200ms;
+    transition: var(--transition-hover);
     overflow: hidden;
 }
 
 .teachers-field {
     display: flex;
     align-items: center;
+}
+
+.teachers-field-inp {
+    flex-grow: 1;
 }
 
 .teachers-field-btn {
@@ -475,11 +486,10 @@ aside {
 
 .templates-field {
     margin: 4px;
-    padding: 4px;
     display: grid;
-    border: 1px solid #dfdfdf;
+    border: var(--border);
     border-radius: 8px;
-    transition: 200ms;
+    transition: var(--transition-hover);
     overflow: hidden;
 }
 
@@ -487,8 +497,9 @@ aside {
     background: #f4f4f4;
 }
 
-.templates-field-text {
-    margin: 4px;
+.templates-field-content {
+    padding: 8px;
+    padding-bottom: 0;
     display: grid;
 }
 
@@ -497,6 +508,7 @@ aside {
 }
 
 .templates-field-btns {
+    padding: 4px;
     display: flex;
 }
 
@@ -575,7 +587,7 @@ aside {
     }
     
     .exeption-date {
-        color: var(--fg-2);
+        color: var(--fg-gray);
     }
     
     .title, .btns, .warning, .schedule-now, .schedule-tag, aside {

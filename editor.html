@@ -221,9 +221,11 @@
                                     'template-filtered': templateFilter ? templateFilter != subject.template : false,
                                     'template-filter-highlight': templateFilter ? templateFilter == subject.template : false
                                 }" class="schedule-row subject">
-                                <span class="subject-name">{{ template(subject).name }}</span>
-                                <span class="subject-times">{{ humanTime(subject.begin) }} - {{ humanTime(subject.begin + subject.length) }}</span>
-                                <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                                <div class="subject-content">
+                                    <span class="subject-name">{{ template(subject).name }}</span>
+                                    <span class="subject-times">{{ humanTime(subject.begin) }} - {{ humanTime(subject.begin + subject.length) }}</span>
+                                    <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                                </div>
                             </div>
                             <div v-if="subjectCreationPlaceholder"
                                 :style="{
@@ -231,7 +233,9 @@
                                     'top': (subjectCreationPlaceholder - schedule.begin) * scheduleScale + 'px'
                                 }"
                                 class="schedule-row subject subject-placeholder">
-                                <span class="subject-times">{{ humanTime(subjectCreationPlaceholder) }} - {{ humanTime(subjectCreationPlaceholder + 60) }}</span>
+                                <div class="subject-content">
+                                    <span class="subject-times">{{ humanTime(subjectCreationPlaceholder) }} - {{ humanTime(subjectCreationPlaceholder + 60) }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -273,13 +277,13 @@
                     </button>
                     <div class="config-content">
                         <div v-for="(teacher, i) in schedule.teachers" class="teachers-field">
-                            <input v-model="teacher.name" @input="markUnsaved" type="text" class="inp">
+                            <input v-model="teacher.name" @input="markUnsaved" type="text" class="teachers-field-inp inp">
                             <button @click="removeTeacher(teacher.id)" class="teachers-field-btn btn btn-danger">
                                 <i class="fa-solid fa-minus-circle"></i>
                             </button>
                         </div>
                         <form @submit.prevent="addTeacher" class="teachers-field">
-                            <input v-model="scheduleTeacherInput" type="text" class="inp">
+                            <input v-model="scheduleTeacherInput" type="text" class="teachers-field-inp inp">
                             <button type="submit" class="teachers-field-btn btn btn-success">
                                 <i class="fa-solid fa-plus-circle"></i>
                             </button>
@@ -293,8 +297,10 @@
                     </button>
                     <div class="config-content">
                         <div v-for="template in schedule.templates" @mouseover="startTemplateFilter(template.id)" @mouseout="endTemplateFilter(template.id)" class="templates-field">
-                            <span class="templates-field-name">{{ template.name }}</span>
-                            <span class="templates-field-teachers">{{ template.teachers.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                            <div class="templates-field-content">
+                                <span class="templates-field-name">{{ template.name }}</span>
+                                <span class="templates-field-teachers">{{ template.teachers.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                            </div>
                             <div class="templates-field-btns">
                                 <button @click="editTemplateModal(template.id)" type="submit" class="templates-field-editbtn btn">
                                     <i class="fa-solid fa-pencil"></i>

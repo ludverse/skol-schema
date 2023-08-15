@@ -132,7 +132,7 @@ const app = vue.createApp({
         this.subjectCreationPlaceholder = NaN;
         this.markHintDiscovered(0);
 
-        const begin = Math.round(this.mouseYToScheduleTime(e.clientY + window.scrollY) / 5) * 5;
+        const begin = Math.round(this.mouseYToScheduleTime(e.clientY) / 5) * 5;
 
         this.modalInput = {
             name: "",
@@ -196,18 +196,34 @@ const app = vue.createApp({
         }
     },
 
+    verifySubjectModal(dayI) {
+        const getErrMessage = () => {
+            if (!this.modalInput.name) return "Skriv in ett namn för ämnet";
+            if (this.modalInput.teachers.length <= 1) return "Skriv in minst 1 lärare";
+
+            const begin = this.scheduleTime(this.modalInput.begin, dayI);
+            if (begin < this.schedule.begin + 1440 * dayI || begin > this.schedule.end + 1440 * dayI) return "Starttiden är utanför schemat";
+
+            const length = this.scheduleTime(this.modalInput.end, dayI) - begin;
+            if (length <= 0) return "Sluttiden får inte vara före starttiden";
+            if (begin + length > this.schedule.end + 1440 * dayI) return "Sluttiden är utanför schemat";
+        }
+
+        const errMsg = getErrMessage();
+        if (errMsg) {
+            this.modal.error = errMsg;
+            return false;
+        } else {
+            return true;
+        }
+    },
+
     createSubject(dayI) {
-        if (!this.modalInput.name) return this.modal.error = "Skriv in ett namn för ämnet";
-        if (this.modalInput.teachers.length <= 1) return this.modal.error = "Skriv in minst 1 lärare";
+        if (!this.verifySubjectModal(dayI)) return;
+        this.closeModal();
 
         const begin = this.scheduleTime(this.modalInput.begin, dayI);
-        if (begin < this.schedule.begin + 1440 * dayI || begin > this.schedule.end + 1440 * dayI) return this.modal.error = "Sluttiden är utanför schemat";
-
         const length = this.scheduleTime(this.modalInput.end, dayI) - begin;
-        if (length < 0) return this.modal.error = "Sluttiden är före startdatumet";
-        if (begin + length > this.schedule.end + 1440 * dayI) return this.modal.error = "Sluttiden är utanför schemat";
-
-        this.closeModal();
 
         let data = {};
         const template = this.schedule.templates.find(template => template.id == this.modalInput.template);
@@ -229,19 +245,13 @@ const app = vue.createApp({
 
     editSubject(subjectId) {
         const subjectI = this.schedule.subjects.findIndex(subject => subject.id == subjectId);
-        const dayI = Math.floor(this.schedule.subjects[subjectI].begin / 1440) + 1;
+        const dayI = Math.floor(this.schedule.subjects[subjectI].begin / 1440);
 
-        if (!this.modalInput.name) return this.modal.error = "Skriv in ett namn för ämnet";
-        if (this.modalInput.teachers.length <= 1) return this.modal.error = "Skriv in minst 1 lärare";
-
-        const begin = this.scheduleTime(this.modalInput.begin, dayI - 1);
-        if (begin < this.schedule.begin + 1440 * (dayI - 1) || begin > this.schedule.end + 1440 * (dayI - 1)) return this.modal.error = "Startdatumet är utanför schemat";
-
-        const length = this.scheduleTime(this.modalInput.end, dayI - 1) - begin;
-        if (length < 0) return this.modal.error = "Slutdatumet är före startdatumet";
-        if (begin + length > this.schedule.end + 1440 * (dayI - 1)) return this.modal.error = "Slutdatument är utanför schemat";
-
+        if (!this.verifySubjectModal(dayI)) return;
         this.closeModal();
+
+        const begin = this.scheduleTime(this.modalInput.begin, dayI);
+        const length = this.scheduleTime(this.modalInput.end, dayI) - begin;
     
         let data = {};
         const template = this.schedule.templates.find(template => template.id == this.modalInput.template);
