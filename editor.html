@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/global.css">
+    <script src="assets/js/global.js"></script>
     <script src="assets/js/editor.html.js" type="module" defer></script>
 </head>
 <body>
@@ -125,8 +126,8 @@
                         </div>
                         <div class="modal-field">
                             <i class="modal-text fa-solid fa-palette"></i>
-                            <select v-model="modalInput.color" class="modal-element inp" :style="{ 'color': schedule.colors[modalInput.color] }">
-                                <option v-for="(color, name) in schedule.colors" :value="name" :style="{ 'color': color }">{{ name }}</option>
+                            <select v-model="modalInput.color" class="modal-element inp" :style="{ 'color': useDarkColourOnBg(template(modalInput, true).color.hex) ? '#000000' : template(modalInput, true).color.hex }">
+                                <option v-for="colour in colours" :value="colour.id" class="modal-field-coloropt">{{ colour.name }}</option>
                             </select>
                         </div>
                     </div>
@@ -144,8 +145,8 @@
                         </div>
                         <div class="modal-field">
                             <i class="modal-text fa-solid fa-palette"></i>
-                            <select v-model="modalInput.color" class="modal-element inp" :style="{ 'color': schedule.colors[modalInput.color] }">
-                                <option v-for="(color, name) in schedule.colors" :value="name" :style="{ 'color': color }" class="modal-field-coloropt">{{ name }}</option>
+                            <select v-model="modalInput.color" class="modal-element inp" :style="{ 'color': useDarkColourOnBg(template(modalInput, true).color.hex) ? '#000000' : template(modalInput, true).color.hex }">
+                                <option v-for="colour in colours" :value="colour.id" class="modal-field-coloropt">{{ colour.name }}</option>
                             </select>
                         </div>
                     </div>
@@ -214,8 +215,9 @@
                                 @click="$event.ctrlKey ? void(0) : showModal('subject', subject)"
                                 :style="{
                                     '--height': subject.length * scheduleScale + 'px',
-                                    'background': schedule.colors[template(subject).color],
-                                    'top': (subject.begin % 1440 - schedule.begin) * scheduleScale + 'px'
+                                    'background': template(subject, true).color.hex,
+                                    'top': (subject.begin % 1440 - schedule.begin) * scheduleScale + 'px',
+                                    color: useDarkColourOnBg(template(subject, true).color.hex) ? 'var(--fg-black)' : 'var(--fg-white)'
                                 }"
                                 :class="{
                                     'template-filtered': templateFilter ? templateFilter != subject.template : false,

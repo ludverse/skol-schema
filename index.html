@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/global.css">
+    <script src="assets/js/global.js"></script>
     <script src="assets/js/index.html.js" type="module" defer></script>
 </head>
 <body>
@@ -117,8 +118,9 @@
                                 @click="$event.ctrlKey ? void(0) : showModal('subject', subject)"
                                 :style="{
                                     '--height': subject.length * scheduleScale + 'px',
-                                    'background': schedule.colors[template(subject).color],
-                                    'top': (subject.begin % 1440 - schedule.begin) * scheduleScale + 'px'
+                                    'background': template(subject, true).color.hex,
+                                    'top': (subject.begin % 1440 - schedule.begin) * scheduleScale + 'px',
+                                    color: useDarkColourOnBg(template(subject, true).color.hex) ? 'var(--fg-black)' : 'var(--fg-white)'
                                 }" class="schedule-row subject">
                                 <div class="subject-content">
                                     <span class="subject-name">{{ template(subject).name }}</span>

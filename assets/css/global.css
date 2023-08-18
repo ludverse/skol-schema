@@ -231,12 +231,9 @@ body {
     color: #fc5c65;
 }
 
-.title {
-    margin: 12px 12px 0;
-}
-
 .warning {
-    margin: 0 12px;
+    margin: 12px 12px 0;
+    display: block;
     color: #e74c3c;
 }
 
@@ -306,7 +303,6 @@ main {
 .subject {
     width: 100%;
     height: var(--height);
-    color: #ffffff;
     border-radius: 4px;
     overflow: hidden;
     box-sizing: border-box;
@@ -339,8 +335,7 @@ main {
 }
 
 .subject-placeholder {
-    --divide: 1;
-    --position: 1;
+    color: var(--fg-white);
     background: var(--fg-gray);
     opacity: 0.5;
     z-index: 700;
@@ -356,7 +351,7 @@ main {
 }
 
 .subject-times, .subject-teachers {
-    color: #ffffffc0;
+    opacity: 0.75;
 }
 
 .schedule-now {

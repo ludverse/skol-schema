@@ -1,5 +1,3 @@
-
-const VERSION = 3;
 import * as vue from "https://unpkg.com/petite-vue?module";
 
 function HintPopup(props) {
@@ -13,39 +11,14 @@ function HintPopup(props) {
 
 const app = vue.createApp({
     HintPopup,
+
+    schedule: DEFAULT_SCHEDULE,
+    colours: DEFAULT_COLOURS,
+
     modal: null,
     modalType: null,
     modalArgs: [],
     modalInput: null,
-    schedule: {
-        version: 3,
-        label: "",
-        revision: "ht23.0.0",
-        begin: 480,
-        end: 900,
-        colors: {
-            red: "#fc5c65",
-            orange: "#fd9644",
-            yellow: "#fed330",
-            green: "#26de81",
-            turquoise: "#2bcbba",
-            aqua: "#45aaf2",
-            blue: "#4b7bec",
-            purple: "#a55eea",
-            gray: "#a3a3a3",
-            black: "#4b6584"
-        },
-        teachers: [{
-            id: "a",
-            name: "Nils"
-        }, {
-            id: "b",
-            name: "Elin"
-        }],
-        templates: [],
-        exeptions: [],
-        subjects: []
-    },
     scheduleScale: 2,
     scheduleTeacherInput: "",
     subjectCreationPlaceholder: NaN,
@@ -72,6 +45,26 @@ const app = vue.createApp({
         return split[0] * 60 + Number(split[1]) + day * 1440;
     },
     dateToTime: date => date.getHours() * 60 + date.getMinutes(),
+    arrayEquals: (a, b) => {
+        return Array.isArray(a) &&
+            Array.isArray(b) &&
+            a.length === b.length &&
+            a.every((val, index) => val === b[index]);
+    },
+    uuid: () => {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+            var r = Math.random() * 16 | 0, v = c == "x" ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    },
+    useDarkColourOnBg: bgColour => {
+        const hexString = bgColour.charAt(0) == "#" ? bgColour.substring(1, 7) : bgColour;
+        const r = parseInt(hexString.substring(0, 2), 16);
+        const g = parseInt(hexString.substring(2, 4), 16);
+        const b = parseInt(hexString.substring(4, 6), 16);
+
+        return ((r * 0.299) + (g * 0.587) + (b * 0.114)) > 210;
+    },
     mouseYToScheduleTime(clientY) {
         const scheduleCol = document.getElementsByClassName("schedule-col")[0];
         const colRect = scheduleCol.getBoundingClientRect();
@@ -83,24 +76,20 @@ const app = vue.createApp({
 
         return limited;
     },
-    template(subject) {
+    template(subject, modifyColour = false) {
+        let templated = subject;
         if (subject.template) {
-            return { ...this.schedule.templates.find(template => template.id == subject.template), ...subject };
-        } else {
-            return subject;
+            templated =  { ...this.schedule.templates.find(template => template.id == subject.template), ...subject };
         }
-    },
-    arrayEquals(a, b) {
-        return Array.isArray(a) &&
-            Array.isArray(b) &&
-            a.length === b.length &&
-            a.every((val, index) => val === b[index]);
-    },
-    uuid() {
-        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
-            var r = Math.random() * 16 | 0, v = c == "x" ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
+
+        if (modifyColour) {
+            templated = {
+                ...templated,
+                color: this.colours.find(colour => colour.id == templated.color)
+            }
+        }
+
+        return templated;
     },
 
     showModal(type, content) {
@@ -140,7 +129,7 @@ const app = vue.createApp({
             end: this.humanTime(begin + 60, true),
             timeDifference: 60,
             teachers: [ "null" ],
-            color: Object.keys(this.schedule.colors)[0]
+            color: this.colours[0].id
         }
         this.showModal("input:subject", {
             label: "Nytt ämne",
@@ -370,7 +359,7 @@ const app = vue.createApp({
         this.modalInput = {
             name: "",
             teachers: [ "null" ],
-            color: Object.keys(this.schedule.colors)[0]
+            color: this.colours[0].id
         }
 
         this.showModal("input:template", {
