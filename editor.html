@@ -7,7 +7,7 @@
     <title>Redigerar schema</title>
     <link rel="shortcut icon" href="assets/img/favicon-editor.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://kit.fontawesome.com/16b29154c0.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="assets/css/global.css">
     <script src="assets/js/global.js"></script>
     <script src="assets/js/editor.html.js" type="module" defer></script>
@@ -15,12 +15,30 @@
 <body>
     <div v-scope @vue:mounted="mounted" :class="{ 'loaded': loaded }" class="root editor">
         <div v-if="modalType" class="modal">
-            <div v-if="modalType == 'unsaved'" class="modal-container">
+            <div v-if="modalType == 'share'" class="modal-container">
                 <div class="modal-main">
                     <div class="modal-top">
                         <span class="modal-label">
-                            Osparade ändringar
+                            <span>Dela schema</span>
                         </span>
+                        <button @click="closeModal" class="modal-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="modal-field" style="display: flex">
+                            <textarea type="text" id="shareUrlField" class="modal-element inp" rows="4" readonly>{{ modal.shareUrl }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-btns">
+                    <button @click="copyShareUrl(modal.shareUrl)" class="modal-element btn">Kopiera länk</button>
+                </div>
+            </div>
+            <div v-if="modalType == 'unsaved'" class="modal-container">
+                <div class="modal-main">
+                    <div class="modal-top">
+                        <span class="modal-label">Osparade ändringar</span>
                         <button @click="closeModal" class="modal-close">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
@@ -36,9 +54,10 @@
                             </span>
                         </div>
                         <div class="modal-field">
-                            <button @click="saveSchedule" :disabled="!hasUnsavedChanges" class="modal-element btn">
+                            <button @click="saveSchedule" :disabled="!hasUnsavedChanges && !isPreview" class="modal-element btn">
                                 <i class="fa-solid fa-floppy-disk btn-icon"></i>
-                                <span class="btn-label">Spara</span>
+                                <span v-if="isPreview" class="btn-label">Skriv över</span>
+                                <span v-else class="btn-label">Spara</span>
                                 <i v-if="hasUnsavedChanges" class="fa-solid fa-circle btn-status" title="Du har osparade ändringar"></i>
                             </button>
                         </div>
@@ -100,7 +119,7 @@
                     </div>
                     <div v-if="modalArgs[0] == 'subject'" class="modal-content">
                         <div class="modal-field">
-                            <i class="modal-text fa-solid fa-pencil"></i>
+                            <i class="modal-text fa-solid fa-pen"></i>
                             <input v-model="modalInput.name" type="text" class="modal-element inp">
                             <select v-if="modalArgs[0] == 'subject'" v-model="modalInput.template" @change="editSubjectTemplate" class="modal-element inp">
                                 <option value="null"></option>
@@ -133,7 +152,7 @@
                     </div>
                     <div v-if="modalArgs[0] == 'template'" class="modal-content">
                         <div class="modal-field">
-                            <i class="modal-text fa-solid fa-pencil"></i>
+                            <i class="modal-text fa-solid fa-pen"></i>
                             <input v-model="modalInput.name" type="text" class="modal-element inp">
                         </div>
                         <div class="modal-field">
@@ -176,14 +195,23 @@
         <div class="content">
             <main>
                 <div class="btns">
-                    <a @click="unsavedModal($event, 'index.html')" href="index.html" class="btn">
+                    <a v-if="isPreview" href="editor.html" class="btn">
+                        <i class="fa-solid fa-circle-xmark btn-icon"></i>
+                        <span class="btn-label">Stäng förhandsgranskning</span>
+                    </a>
+                    <a v-else @click="unsavedModal($event, 'index.html')" href="index.html" class="btn">
                         <i class="fa-solid fa-calendar-week btn-icon"></i>
                         <span class="btn-label">Visa schema</span>
                     </a>
-                    <button @click="saveSchedule" :disabled="!hasUnsavedChanges" class="btn">
+                    <button @click="saveSchedule" :disabled="!hasUnsavedChanges && !isPreview" class="btn">
                         <i class="fa-solid fa-floppy-disk btn-icon"></i>
-                        <span class="btn-label">Spara</span>
+                        <span v-if="isPreview" class="btn-label">Skriv över</span>
+                        <span v-else class="btn-label">Spara</span>
                         <i v-if="hasUnsavedChanges" class="fa-solid fa-circle btn-status" title="Du har osparade ändringar"></i>
+                    </button>
+                    <button @click="shareModal" class="btn">
+                        <i class="fa-solid fa-share btn-icon"></i>
+                        <span class="btn-label">Dela</span>
                     </button>
                 </div>
                 <div class="top">
@@ -305,7 +333,7 @@
                             </div>
                             <div class="templates-field-btns">
                                 <button @click="editTemplateModal(template.id)" type="submit" class="templates-field-editbtn btn">
-                                    <i class="fa-solid fa-pencil"></i>
+                                    <i class="fa-solid fa-pen"></i>
                                 </button>
                                 <button @click="removeTemplate(template.id)" class="btn btn-danger">
                                     <i class="fa-solid fa-trash"></i>

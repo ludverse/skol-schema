@@ -26,6 +26,7 @@ const app = vue.createApp({
     warning: "",
     templateFilter: null,
     configMenus: [],
+    isPreview: false,
     allowConfigMenuToggling: true,
     hasUnsavedChanges: false,
     shouldSkipUnsavedMessage: false,
@@ -269,7 +270,7 @@ const app = vue.createApp({
     },
 
     unsavedModal(e, forwardUrl) {
-        if (!this.hasUnsavedChanges) return;
+        if (!this.hasUnsavedChanges || this.isPreview) return;
 
         this.showModal("unsaved", {
             url: forwardUrl
@@ -285,13 +286,28 @@ const app = vue.createApp({
     saveSchedule() {
         localStorage.setItem("schedule", JSON.stringify(this.schedule));
         this.hasUnsavedChanges = false;
+        this.isPreview = false;
     },
 
     markUnsaved() {
         console.log("unsaved change", this);
-        if (!this.hasUnsavedChanges) {
+        if (!this.hasUnsavedChanges && !this.isPreview) {
             this.hasUnsavedChanges = true;
         }
+    },
+
+    shareModal() {
+        const urlSafeSchedule = encodeURIComponent(JSON.stringify(this.schedule));
+        const shareUrl = `${ location.protocol }//${ location.host }${ location.pathname }?schedule=${ urlSafeSchedule }`;
+
+        this.showModal("share", {
+            shareUrl
+        });
+    },
+
+    copyShareUrl(shareUrl) {
+        navigator.clipboard.writeText(shareUrl);
+        document.querySelector("#shareUrlField").select();
     },
 
     editScheduleLengthModal() {
@@ -451,13 +467,17 @@ const app = vue.createApp({
     },
 
     mounted() {
-        const rawSchedule = localStorage.getItem("schedule");
-        if (rawSchedule) {
-            this.schedule = JSON.parse(rawSchedule);
-        }
+        const params = new URL(location.href).searchParams;
 
-        this.scheduleBeginInput = this.humanTime(this.schedule.begin, true);
-        this.scheduleEndInput = this.humanTime(this.schedule.end, true);
+        if (params.get("schedule")) {
+            this.schedule = JSON.parse(params.get("schedule"));
+            this.isPreview = true;
+        } else {
+            const rawSchedule = localStorage.getItem("schedule");
+            if (rawSchedule) {
+                this.schedule = JSON.parse(rawSchedule);
+            }
+        }
 
         const rawHintsSeen = localStorage.getItem("discoveredHints");
         if (rawHintsSeen) {
