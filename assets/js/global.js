@@ -31,7 +31,7 @@ const DEFAULT_COLOURS = [
     },
     {
         id: "yellow",
-        name: "solros",
+        name: "gul",
         hex: "#fed330",
     },
     {
