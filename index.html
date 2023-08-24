@@ -119,14 +119,10 @@
                                 :style="{
                                     '--height': subject.length * scheduleScale + 'px',
                                     '--background': template(subject, true).color.hex,
-                                    '--beginlabel': `'${ humanTime(subject.begin) }'`,
-                                    '--endlabel': `'${ humanTime(subject.begin + subject.length) }'`,
                                     'top': (subject.begin % 1440 - schedule.begin) * scheduleScale + 'px',
                                     'color': useDarkColourOnBg(template(subject, true).color.hex) ? 'var(--fg-black)' : 'var(--fg-white)',
                                 }" class="subject">
-                                <div class="subject-time">
-                                    <span>{{ humanTime(subject.begin + subject.length) }}</span>
-                                </div>
+                                <span class="subject-time">{{ humanTime(subject.begin) }}</span>
                                 <div class="subject-content">
                                     <span class="subject-name">{{ template(subject).name }}</span>
                                     <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>

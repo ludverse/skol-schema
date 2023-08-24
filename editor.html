@@ -251,9 +251,7 @@
                                     'template-filtered': templateFilter ? templateFilter != subject.template : false,
                                     'template-filter-highlight': templateFilter ? templateFilter == subject.template : false
                                 }" class="subject">
-                                <div class="subject-time">
-                                    <span>{{ humanTime(subject.begin + subject.length) }}</span>
-                                </div>
+                                <span class="subject-time">{{ humanTime(subject.begin) }}</span>
                                 <div class="subject-content">
                                     <span class="subject-name">{{ template(subject).name }}</span>
                                     <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
