@@ -243,18 +243,23 @@
                                 @click="$event.ctrlKey ? void(0) : showModal('subject', subject)"
                                 :style="{
                                     '--height': subject.length * scheduleScale + 'px',
-                                    'background': template(subject, true).color.hex,
+                                    '--background': template(subject, true).color.hex,
                                     'top': (subject.begin % 1440 - schedule.begin) * scheduleScale + 'px',
-                                    color: useDarkColourOnBg(template(subject, true).color.hex) ? 'var(--fg-black)' : 'var(--fg-white)'
+                                    'color': useDarkColourOnBg(template(subject, true).color.hex) ? 'var(--fg-black)' : 'var(--fg-white)',
                                 }"
                                 :class="{
                                     'template-filtered': templateFilter ? templateFilter != subject.template : false,
                                     'template-filter-highlight': templateFilter ? templateFilter == subject.template : false
-                                }" class="schedule-row subject">
+                                }" class="subject">
+                                <div class="subject-time">
+                                    <span>{{ humanTime(subject.begin + subject.length) }}</span>
+                                </div>
                                 <div class="subject-content">
                                     <span class="subject-name">{{ template(subject).name }}</span>
-                                    <span class="subject-times">{{ humanTime(subject.begin) }} - {{ humanTime(subject.begin + subject.length) }}</span>
                                     <span class="subject-teachers">{{ template(subject).teachers?.map(id => schedule.teachers.find(teacher => teacher.id == id)?.name || "NULL").join(", ") }}</span>
+                                </div>
+                                <div class="subject-time subject-time-end">
+                                    <div>{{ humanTime(subject.begin + subject.length) }}</div>
                                 </div>
                             </div>
                             <div v-if="subjectCreationPlaceholder"

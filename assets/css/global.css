@@ -300,19 +300,39 @@ main {
     width: 100%;
 }
 
-.schedule-row {
-    position: absolute;
-}
-
 .subject {
     width: 100%;
     height: var(--height);
-    border-radius: 4px;
-    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr;
+    position: absolute;
+    background: var(--background);
+    border-radius: 0 4px 0;
     box-sizing: border-box;
     pointer-events: all;
     z-index: 400;
     cursor: default;
+}
+
+.subject-time {
+    padding: 2px 4px 0;
+    height: 10px;
+    position: absolute;
+    bottom: 100%;
+    font-size: 0.85em;
+    background: var(--background);
+    border-radius: 4px 4px 0 0;
+}
+
+.subject-time.subject-time-end {
+    top: 100%;
+    bottom: unset;
+    right: 0;
+    transform: rotate(180deg);
+}
+
+.subject-time > div {
+    transform: rotate(-180deg);
 }
 
 .subject.template-filtered {
@@ -334,8 +354,10 @@ main {
 
 .subject-content {
     padding: 6px;
+    max-height: 1fr;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .subject-placeholder {
